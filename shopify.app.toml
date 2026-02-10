@@ -1,12 +1,12 @@
 # Shopify App Configuration
 
-name = "Nurvella"
-client_id = "769bcac44fd7622983265aeb1e890ad7" # Shopify Partner Dashboard'dan alınacak
+name = "Maisoonmaia Unique"
+client_id = "769bcac44fd7622983265aeb1e890ad7"
 application_url = "https://mailsvel.gustoapp.net"
 embedded = true
 
 [access_scopes]
-scopes = "write_products,write_orders,read_customers,write_customers,write_draft_orders,read_draft_orders,write_marketing_events,read_marketing_events,read_checkouts"
+scopes = "write_products,write_orders,write_draft_orders,read_draft_orders,write_marketing_events,read_marketing_events,read_checkouts"
 
 [auth]
 redirect_urls = [
