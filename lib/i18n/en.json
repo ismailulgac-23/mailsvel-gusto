@@ -1,0 +1,69 @@
+{
+  "app": {
+    "title": "COD WhatsApp Verification",
+    "subtitle": "WhatsApp verification settings for cash on delivery orders"
+  },
+  "settings": {
+    "cod": {
+      "title": "Cash on Delivery (COD)",
+      "description": "Allow your customers to use cash on delivery payment option.",
+      "enable": "Enable",
+      "disable": "Disable"
+    },
+    "whatsapp": {
+      "title": "WhatsApp Verification",
+      "description": "Require WhatsApp phone number verification for cash on delivery orders.",
+      "enable": "Enable",
+      "disable": "Disable"
+    },
+    "popup": {
+      "title": "Popup Settings",
+      "titleLabel": "Popup Title",
+      "descriptionLabel": "Popup Description",
+      "save": "Save Settings",
+      "saved": "Settings saved"
+    }
+  },
+  "setup": {
+    "title": "Setup Information",
+    "step1": {
+      "title": "1. Shopify Partner Account",
+      "description": "Configure your App URL in Shopify Partner Dashboard."
+    },
+    "step2": {
+      "title": "2. WhatsApp Business API",
+      "description": "Configure your WhatsApp Business account in .env.local file."
+    },
+    "step3": {
+      "title": "3. Checkout UI Extension",
+      "description": "Install the extension to show popup on checkout page."
+    }
+  },
+  "checkout": {
+    "banner": {
+      "title": "Choose Payment Method",
+      "description": "Select cash on delivery or online payment option"
+    },
+    "buttons": {
+      "cod": "Cash on Delivery",
+      "online": "Online Payment"
+    },
+    "modal": {
+      "title": "WhatsApp Verification",
+      "description": "To use cash on delivery option, you need to verify your phone number via WhatsApp.",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "+1 XXX XXX XXXX",
+      "sendCode": "Send Verification Code",
+      "codeLabel": "Verification Code",
+      "codePlaceholder": "123456",
+      "codeDescription": "Enter the 6-digit code sent to your WhatsApp:",
+      "verify": "Verify",
+      "resend": "Resend Code",
+      "success": "Your phone number has been successfully verified! You can complete your order.",
+      "error": {
+        "sendFailed": "An error occurred while sending the code. Please try again.",
+        "verifyFailed": "Code verification failed. Please check and try again."
+      }
+    }
+  }
+}

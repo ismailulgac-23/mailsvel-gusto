@@ -1,0 +1,6 @@
+{
+  "cod_interceptor": {
+    "name": "COD Interceptor",
+    "description": "Intercepts checkout navigation for COD verification"
+  }
+}

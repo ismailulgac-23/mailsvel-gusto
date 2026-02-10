@@ -1,0 +1,98 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+    id          String    @id
+    shop        String
+    state       String
+    isOnline    Boolean   @default(false)
+    scope       String?
+    expires     DateTime?
+    accessToken String
+    userId      String?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
+
+model Shop {
+    id               String            @id @default(cuid())
+    shopDomain       String            @unique
+    accessToken      String
+    isActive         Boolean           @default(true)
+    codEnabled       Boolean           @default(true)
+    whatsappEnabled  Boolean           @default(true)
+    popupTitle       String            @default("Ödeme Yöntemi Seçin")
+    popupDescription String            @default("Kapıda ödeme veya online ödeme seçeneklerinden birini seçin")
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
+    orders           Order[]
+    metaIntegration  MetaIntegration?
+}
+
+// Meta Business Integration per shop
+model MetaIntegration {
+    id                    String      @id @default(cuid())
+    shopId                String      @unique
+    shop                  Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+    metaBusinessAccountId String
+    metaAccessToken       String
+    metaTokenExpiry       DateTime?
+    isActive              Boolean     @default(true)
+    createdAt             DateTime    @default(now())
+    updatedAt             DateTime    @updatedAt
+    pixels                MetaPixel[]
+}
+
+// Meta Pixel Configuration
+model MetaPixel {
+    id                  String           @id @default(cuid())
+    metaIntegrationId   String
+    metaIntegration     MetaIntegration  @relation(fields: [metaIntegrationId], references: [id], onDelete: Cascade)
+    pixelId             String
+    pixelName           String
+    capiAccessToken     String?
+    isActive            Boolean          @default(true)
+    createdAt           DateTime         @default(now())
+    updatedAt           DateTime         @updatedAt
+    
+    @@unique([metaIntegrationId, pixelId])
+}
+
+model Order {
+    id               String    @id @default(cuid())
+    shopId           String
+    shop             Shop      @relation(fields: [shopId], references: [id])
+    orderId          String?
+    customerName     String
+    customerPhone    String
+    customerEmail    String?
+    customerAddress  String
+    customerCity     String
+    customerCountry  String
+    customerZip      String?
+    whatsappVerified Boolean   @default(false)
+    verificationCode String?
+    codeExpiry       DateTime?
+    paymentMethod    String    @default("COD")
+    orderStatus      String    @default("pending")
+    totalAmount      Float?
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+}
+
+model WhatsappVerification {
+    id               String   @id @default(cuid())
+    phoneNumber      String
+    verificationCode String
+    expiresAt        DateTime
+    verified         Boolean  @default(false)
+    attempts         Int      @default(0)
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+}

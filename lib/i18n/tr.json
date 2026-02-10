@@ -1,0 +1,69 @@
+{
+  "app": {
+    "title": "COD WhatsApp Doğrulama",
+    "subtitle": "Kapıda ödeme siparişleri için WhatsApp doğrulama ayarları"
+  },
+  "settings": {
+    "cod": {
+      "title": "Kapıda Ödeme (COD)",
+      "description": "Müşterilerinizin kapıda ödeme seçeneğini kullanmasına izin verin.",
+      "enable": "Etkinleştir",
+      "disable": "Devre Dışı Bırak"
+    },
+    "whatsapp": {
+      "title": "WhatsApp Doğrulama",
+      "description": "Kapıda ödeme siparişleri için WhatsApp ile telefon numarası doğrulama zorunluluğu.",
+      "enable": "Etkinleştir",
+      "disable": "Devre Dışı Bırak"
+    },
+    "popup": {
+      "title": "Popup Ayarları",
+      "titleLabel": "Popup Başlığı",
+      "descriptionLabel": "Popup Açıklaması",
+      "save": "Ayarları Kaydet",
+      "saved": "Ayarlar kaydedildi"
+    }
+  },
+  "setup": {
+    "title": "Kurulum Bilgileri",
+    "step1": {
+      "title": "1. Shopify Partner Hesabı",
+      "description": "App URL'nizi Shopify Partner Dashboard'da ayarlayın."
+    },
+    "step2": {
+      "title": "2. WhatsApp Business API",
+      "description": "WhatsApp Business hesabınızı .env.local dosyasında yapılandırın."
+    },
+    "step3": {
+      "title": "3. Checkout UI Extension",
+      "description": "Ödeme sayfasında popup göstermek için extension'ı yükleyin."
+    }
+  },
+  "checkout": {
+    "banner": {
+      "title": "Ödeme Yöntemi Seçin",
+      "description": "Kapıda ödeme veya online ödeme seçeneklerinden birini seçin"
+    },
+    "buttons": {
+      "cod": "Kapıda Ödeme",
+      "online": "Online Ödeme"
+    },
+    "modal": {
+      "title": "WhatsApp Doğrulama",
+      "description": "Kapıda ödeme seçeneğini kullanmak için telefon numaranızı WhatsApp ile doğrulamanız gerekmektedir.",
+      "phoneLabel": "Telefon Numarası",
+      "phonePlaceholder": "+90 5XX XXX XX XX",
+      "sendCode": "Doğrulama Kodu Gönder",
+      "codeLabel": "Doğrulama Kodu",
+      "codePlaceholder": "123456",
+      "codeDescription": "WhatsApp'ınıza gönderilen 6 haneli kodu girin:",
+      "verify": "Doğrula",
+      "resend": "Yeni Kod Gönder",
+      "success": "Telefon numaranız başarıyla doğrulandı! Siparişinizi tamamlayabilirsiniz.",
+      "error": {
+        "sendFailed": "Kod gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        "verifyFailed": "Kod doğrulanamadı. Lütfen kontrol edip tekrar deneyin."
+      }
+    }
+  }
+}

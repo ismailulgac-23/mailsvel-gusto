@@ -1,0 +1,75 @@
+{
+  "cod_interceptor": {
+    "name": "KÖ WhatsApp Engelleyici",
+    "description": "Kapıda ödeme doğrulaması için checkout navigasyonunu engeller ve WhatsApp doğrulaması yapar"
+  },
+  "popup": {
+    "title": "Kapıda Ödeme ile Sipariş Ver",
+    "close": "Kapat",
+    "loading": "İşleminiz gerçekleştiriliyor..."
+  },
+  "steps": {
+    "contact": "İletişim",
+    "address": "Adres",
+    "verification": "Doğrulama",
+    "complete": "Tamamla"
+  },
+  "form": {
+    "contact_title": "İletişim Bilgileriniz",
+    "address_title": "Teslimat Adresi",
+    "verification_title": "WhatsApp Doğrulama",
+    "summary_title": "Sipariş Özeti",
+    "name_label": "Ad Soyad",
+    "name_placeholder": "Adınız ve soyadınız",
+    "phone_label": "Telefon Numarası",
+    "phone_placeholder": "+90 5XX XXX XX XX",
+    "email_label": "E-posta (Opsiyonel)",
+    "email_placeholder": "ornek@email.com",
+    "address_label": "Adres",
+    "address_placeholder": "Mahalle, sokak, bina no, daire no",
+    "city_label": "Şehir",
+    "city_placeholder": "İstanbul",
+    "zip_label": "Posta Kodu",
+    "zip_placeholder": "34000",
+    "country_label": "Ülke",
+    "country_default": "Türkiye"
+  },
+  "verification": {
+    "info": "Telefon numaranıza WhatsApp üzerinden bir doğrulama kodu göndereceğiz.",
+    "code_label": "Doğrulama Kodu",
+    "code_placeholder": "6 haneli kod",
+    "send_code": "Kod Gönder",
+    "verify_code": "Kodu Doğrula",
+    "resend_code": "Kodu Tekrar Gönder",
+    "code_sent": "Doğrulama kodu WhatsApp'a gönderildi!",
+    "code_verified": "Doğrulama başarılı! ✓",
+    "invalid_code": "Geçersiz kod. Lütfen tekrar deneyin.",
+    "code_expired": "Kod süresi dolmuş. Lütfen yeni kod isteyin.",
+    "too_many_attempts": "Çok fazla hatalı deneme. Lütfen yeni kod isteyin."
+  },
+  "summary": {
+    "customer_info": "Müşteri Bilgileri",
+    "cart_summary": "Sepet Özeti",
+    "total": "Toplam",
+    "terms": "Kapıda ödeme koşullarını kabul ediyorum",
+    "complete_order": "Siparişi Tamamla"
+  },
+  "buttons": {
+    "continue": "Devam Et",
+    "back": "Geri",
+    "send": "Gönder",
+    "verify": "Doğrula",
+    "complete": "Tamamla"
+  },
+  "messages": {
+    "order_created": "🎉 Siparişiniz başarıyla oluşturuldu!",
+    "order_number": "Sipariş No",
+    "error": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "missing_name": "Lütfen adınızı ve soyadınızı girin",
+    "missing_phone": "Lütfen telefon numaranızı girin",
+    "missing_address": "Lütfen adresinizi girin",
+    "missing_city": "Lütfen şehir bilgisini girin",
+    "missing_country": "Lütfen ülke bilgisini girin",
+    "accept_terms": "Lütfen kapıda ödeme koşullarını kabul edin"
+  }
+}

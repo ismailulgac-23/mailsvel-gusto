@@ -1,0 +1,36 @@
+{
+  "name": "shopify-cod-whatsapp-app",
+  "version": "1.0.0",
+  "description": "Shopify COD WhatsApp Verification App",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
+    "lint": "next lint",
+    "shopify": "shopify",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@shopify/app-bridge": "^3.7.10",
+    "@shopify/app-bridge-react": "^3.7.10",
+    "@shopify/polaris": "^12.0.0",
+    "@shopify/shopify-api": "^9.0.0",
+    "axios": "^1.13.2",
+    "next": "14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^3.55.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0",
+    "prisma": "^5.22.0",
+    "typescript": "^5"
+  }
+}

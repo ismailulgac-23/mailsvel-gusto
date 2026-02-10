@@ -1,0 +1,698 @@
+/**
+ * COD Modern Styles - Shopify Polaris Inspired
+ * Tailwind-like utility classes + Modern Shopify design
+ */
+
+/* Tailwind CDN Import */
+@import url('https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css');
+
+/* Iconify CDN */
+@import url('https://code.iconify.design/3/3.1.0/iconify.min.js');
+
+/* Shopify Polaris Color Palette */
+:root {
+  --p-surface: #ffffff;
+  --p-surface-hovered: #f9fafb;
+  --p-surface-pressed: #f4f6f8;
+  --p-surface-subdued: #fafbfb;
+  --p-surface-disabled: #fafbfb;
+  --p-surface-search-field: #f4f6f8;
+  --p-backdrop: rgba(0, 0, 0, 0.5);
+  --p-overlay: rgba(255, 255, 255, 0.5);
+  
+  --p-border: #c9cccf;
+  --p-border-hovered: #999999;
+  --p-border-disabled: #d2d5d8;
+  --p-border-subdued: #e1e3e5;
+  --p-border-shadow: rgba(0, 0, 0, 0.05);
+  
+  --p-text: #202223;
+  --p-text-subdued: #6d7175;
+  --p-text-disabled: #8c9196;
+  
+  --p-interactive: #2c6ecb;
+  --p-interactive-hovered: #1f5199;
+  --p-interactive-pressed: #103262;
+  --p-interactive-disabled: #aeb4b9;
+  
+  --p-primary: #008060;
+  --p-primary-hovered: #006e52;
+  --p-primary-pressed: #005c45;
+  
+  --p-critical: #d72c0d;
+  --p-critical-hovered: #bf2609;
+  --p-critical-pressed: #a72108;
+  
+  --p-warning: #ffc453;
+  --p-warning-hovered: #f5b73b;
+  --p-warning-pressed: #eba91d;
+  
+  --p-success: #008060;
+  --p-success-hovered: #006e52;
+  --p-success-pressed: #005c45;
+  
+  --p-decorative-one: #ffc96b;
+  --p-decorative-two: #8c6eff;
+  --p-decorative-three: #50b5ff;
+  --p-decorative-four: #ff6e6e;
+  
+  --p-shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.05);
+  --p-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --p-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --p-shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.1);
+  
+  --p-border-radius-base: 0.375rem;
+  --p-border-radius-lg: 0.5rem;
+  --p-border-radius-full: 9999px;
+  
+  --p-font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Overlay */
+#cod-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--p-backdrop);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  font-family: var(--p-font-family);
+}
+
+#cod-popup-overlay.active {
+  opacity: 1;
+}
+
+/* Container */
+.cod-popup-container {
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.95);
+  transition: transform 0.2s ease-in-out;
+}
+
+#cod-popup-overlay.active .cod-popup-container {
+  transform: scale(1);
+}
+
+/* Content */
+.cod-popup-content {
+  background: var(--p-surface);
+  border-radius: var(--p-border-radius-lg);
+  box-shadow: var(--p-shadow-xl);
+  overflow: hidden;
+}
+
+/* Header - Shopify Style */
+.cod-popup-header {
+  background: var(--p-surface);
+  border-bottom: 1px solid var(--p-border-subdued);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cod-popup-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--p-text);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.cod-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--p-text-subdued);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--p-border-radius-base);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.cod-close-btn:hover {
+  background: var(--p-surface-hovered);
+  color: var(--p-text);
+}
+
+/* Step Container */
+.cod-step-container {
+  display: none;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.cod-step-container.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Payment Methods - Shopify Card Style */
+.cod-payment-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cod-payment-option {
+  background: var(--p-surface);
+  border: 2px solid var(--p-border);
+  border-radius: var(--p-border-radius-lg);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  text-align: center;
+}
+
+.cod-payment-option:hover {
+  border-color: var(--p-interactive);
+  box-shadow: var(--p-shadow-md);
+}
+
+.cod-payment-option.selected {
+  border-color: var(--p-primary);
+  background: rgba(0, 128, 96, 0.05);
+  box-shadow: 0 0 0 3px rgba(0, 128, 96, 0.1);
+}
+
+.cod-payment-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cod-payment-option h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-text);
+  margin: 0 0 0.25rem 0;
+}
+
+.cod-payment-option p {
+  font-size: 0.875rem;
+  color: var(--p-text-subdued);
+  margin: 0;
+}
+
+.cod-payment-radio {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.cod-payment-radio input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--p-primary);
+}
+
+/* Form Elements - Shopify Polaris Style */
+.cod-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.cod-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--p-text);
+  margin-bottom: 0.5rem;
+}
+
+.cod-input,
+.cod-textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-border-radius-base);
+  font-size: 0.9375rem;
+  color: var(--p-text);
+  background: var(--p-surface);
+  transition: all 0.15s ease;
+  font-family: var(--p-font-family);
+}
+
+.cod-input:hover,
+.cod-textarea:hover {
+  border-color: var(--p-border-hovered);
+}
+
+.cod-input:focus,
+.cod-textarea:focus {
+  outline: none;
+  border-color: var(--p-interactive);
+  box-shadow: 0 0 0 1px var(--p-interactive);
+}
+
+.cod-input::placeholder,
+.cod-textarea::placeholder {
+  color: var(--p-text-subdued);
+}
+
+.cod-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.cod-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Buttons - Shopify Polaris Style */
+.cod-btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--p-border-radius-base);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  width: 100%;
+  font-family: var(--p-font-family);
+  box-shadow: var(--p-shadow-sm);
+}
+
+.cod-btn-primary {
+  background: var(--p-primary);
+  color: #ffffff;
+}
+
+.cod-btn-primary:hover {
+  background: var(--p-primary-hovered);
+  box-shadow: var(--p-shadow-md);
+}
+
+.cod-btn-primary:active {
+  background: var(--p-primary-pressed);
+}
+
+.cod-btn-secondary {
+  background: var(--p-surface);
+  color: var(--p-text);
+  border: 1px solid var(--p-border);
+}
+
+.cod-btn-secondary:hover {
+  background: var(--p-surface-hovered);
+}
+
+.cod-btn-success {
+  background: var(--p-success);
+  color: #ffffff;
+}
+
+.cod-btn-success:hover {
+  background: var(--p-success-hovered);
+  box-shadow: var(--p-shadow-md);
+}
+
+.cod-btn-large {
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+}
+
+.cod-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cod-btn-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Verification Header */
+.cod-verification-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--p-surface-subdued);
+  border-radius: var(--p-border-radius-lg);
+}
+
+.cod-verification-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.cod-verification-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--p-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.cod-verification-desc {
+  font-size: 0.875rem;
+  color: var(--p-text-subdued);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cod-verification-timer {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 196, 83, 0.1);
+  border: 1px solid var(--p-warning);
+  border-radius: var(--p-border-radius-base);
+  font-weight: 500;
+  color: var(--p-text);
+  font-size: 0.875rem;
+}
+
+/* Shipping Profiles */
+.cod-shipping-profiles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cod-shipping-profile {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-border-radius-base);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cod-shipping-profile:hover {
+  border-color: var(--p-interactive);
+  box-shadow: var(--p-shadow-sm);
+}
+
+.cod-shipping-profile input[type="radio"] {
+  margin-top: 0.25rem;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--p-primary);
+}
+
+.cod-shipping-profile-info {
+  flex: 1;
+}
+
+.cod-shipping-profile-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--p-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.cod-shipping-profile-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-primary);
+  margin-top: 0.25rem;
+}
+
+.cod-shipping-profile-desc {
+  font-size: 0.8125rem;
+  color: var(--p-text-subdued);
+  margin-top: 0.25rem;
+}
+
+.cod-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  background: var(--p-success);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--p-border-radius-full);
+}
+
+/* Summary Layout */
+.cod-summary-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.cod-summary-left,
+.cod-summary-right {
+  background: var(--p-surface-subdued);
+  border-radius: var(--p-border-radius-lg);
+  padding: 1.25rem;
+}
+
+.cod-step-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--p-text);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cod-cart-items {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.cod-cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--p-surface);
+  border-radius: var(--p-border-radius-base);
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--p-border-subdued);
+}
+
+.cod-cart-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.cod-cart-item-qty {
+  background: var(--p-primary);
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--p-border-radius-base);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cod-cart-item-title {
+  font-size: 0.875rem;
+  color: var(--p-text);
+  font-weight: 500;
+}
+
+.cod-cart-item-price {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--p-primary);
+}
+
+.cod-summary-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0 0 0;
+  margin-top: 1rem;
+  border-top: 2px solid var(--p-border);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--p-text);
+}
+
+.cod-total-amount {
+  color: var(--p-primary);
+}
+
+.cod-summary-info {
+  margin-bottom: 1.5rem;
+}
+
+.cod-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--p-surface);
+  border-radius: var(--p-border-radius-base);
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--p-border-subdued);
+}
+
+.cod-info-label {
+  font-size: 0.75rem;
+  color: var(--p-text-subdued);
+  font-weight: 500;
+}
+
+.cod-info-value {
+  font-size: 0.875rem;
+  color: var(--p-text);
+  font-weight: 500;
+}
+
+/* Checkbox */
+.cod-terms {
+  margin-bottom: 1.5rem;
+}
+
+.cod-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--p-text);
+}
+
+.cod-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--p-primary);
+}
+
+/* Loading */
+.cod-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 10;
+  border-radius: var(--p-border-radius-lg);
+}
+
+.cod-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--p-border);
+  border-top-color: var(--p-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.cod-loading p {
+  color: var(--p-text-subdued);
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cod-popup-container {
+    max-height: 95vh;
+  }
+
+  .cod-payment-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .cod-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cod-btn-group {
+    grid-template-columns: 1fr;
+  }
+
+  .cod-summary-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scrollbar */
+.cod-popup-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cod-popup-container::-webkit-scrollbar-track {
+  background: var(--p-surface-subdued);
+}
+
+.cod-popup-container::-webkit-scrollbar-thumb {
+  background: var(--p-border);
+  border-radius: var(--p-border-radius-full);
+}
+
+.cod-popup-container::-webkit-scrollbar-thumb:hover {
+  background: var(--p-border-hovered);
+}
+
+/* Accessibility */
+.cod-btn:focus,
+.cod-input:focus,
+.cod-textarea:focus,
+.cod-checkbox:focus {
+  outline: 2px solid var(--p-interactive);
+  outline-offset: 2px;
+}
+
+/* Print */
+@media print {
+  #cod-popup-overlay {
+    display: none !important;
+  }
+}

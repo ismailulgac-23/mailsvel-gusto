@@ -1,0 +1,18 @@
+api_version = "2026-01"
+
+[[extensions]]
+uid = "4ad141bc-f62b-3fcc-8c54-586faabb348444fbbb00"
+type = "theme_app_extension"
+name = "Nurvella"
+handle = "nurvella"
+
+[extensions.settings]
+[[extensions.settings.blocks]]
+type = "app-block"
+name = "Nurvella"
+
+[[extensions.settings.blocks.settings]]
+type = "checkbox"
+id = "enabled"
+label = "Enable COD WhatsApp Verification"
+default = true

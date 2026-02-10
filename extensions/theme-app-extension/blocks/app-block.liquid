@@ -1,0 +1,118 @@
+{% comment %}
+  COD WhatsApp Interceptor App Block
+  Minimal tek popup tasarım - Tailwind CSS ile
+{% endcomment %}
+
+{% if block.settings.enabled %}
+  <!-- Google Fonts - Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+
+  
+  <!-- Shopify Analytics & Pixel Initialization -->
+  <script>
+    (function() {
+      console.log('🎯 COD Tracking Initializing...');
+      
+      if (window.Shopify && window.Shopify.analytics) {
+        console.log('✅ Shopify Analytics mevcut');
+      } else {
+        console.log('⚠️ Shopify Analytics henüz yüklenmedi, bekleniyor...');
+        var analyticsCheckInterval = setInterval(function() {
+          if (window.Shopify && window.Shopify.analytics) {
+            console.log('✅ Shopify Analytics yüklendi');
+            clearInterval(analyticsCheckInterval);
+          }
+        }, 100);
+      }
+      
+      if (window.Shopify && window.Shopify.Pixel) {
+        console.log('✅ Shopify Pixel mevcut');
+      } else {
+        console.log('⚠️ Shopify Pixel henüz yüklenmedi, bekleniyor...');
+        var pixelCheckInterval = setInterval(function() {
+          if (window.Shopify && window.Shopify.Pixel) {
+            console.log('✅ Shopify Pixel yüklendi');
+            clearInterval(pixelCheckInterval);
+          }
+        }, 100);
+      }
+      
+      window.COD_APP_TRACKING = {
+        enabled: true,
+        version: '2.0.0',
+        source: 'COD WhatsApp App - Minimal Design',
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('✅ COD Tracking hazır');
+    })();
+  </script>
+  
+  {{ 'cod-interceptor.js' | asset_url | script_tag }}
+  
+  <div id="cod-interceptor-active" data-enabled="true" style="display: none;">
+    <!-- Bu div interceptor'ın aktif olduğunu belirtir -->
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "COD WhatsApp Interceptor",
+  "target": "body",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Kapıda Ödeme Interceptor'ı Aktif Et",
+      "info": "Aktif olduğunda, checkout butonları COD popup'ını açacak",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Popup Ayarları"
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup Başlığı",
+      "default": "Sedataki Ödeme",
+      "info": "Popup'ın üst kısmında görünecek başlık"
+    },
+    {
+      "type": "checkbox",
+      "id": "whatsapp_verification",
+      "label": "WhatsApp Doğrulaması Zorunlu",
+      "default": true,
+      "info": "Aktif olduğunda müşteriler WhatsApp ile doğrulama yapmalı"
+    },
+    {
+      "type": "header",
+      "content": "Gelişmiş Ayarlar"
+    },
+    {
+      "type": "checkbox",
+      "id": "intercept_cart_page",
+      "label": "Sepet Sayfasını Yakala",
+      "default": true,
+      "info": "Sepet sayfasındaki checkout butonlarını yakalar"
+    },
+    {
+      "type": "checkbox",
+      "id": "intercept_product_page",
+      "label": "Ürün Sayfasını Yakala",
+      "default": true,
+      "info": "Ürün sayfasındaki 'Satın Al' butonlarını yakalar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_animations",
+      "label": "Animasyonları Göster",
+      "default": true,
+      "info": "Popup açılış/kapanış animasyonları"
+    }
+  ]
+}
+{% endschema %}
