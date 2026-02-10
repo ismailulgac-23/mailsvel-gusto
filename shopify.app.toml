@@ -1,11 +1,16 @@
 # Shopify App Configuration
+# BU DOSYA YENİ VE BENZERSİZ BİR UYGULAMA OLUŞTURMAK İÇİN SIFIRLANDI
 
-name = "Maisoonmaia Unique"
-client_id = "769bcac44fd7622983265aeb1e890ad7"
+name = "Maisoonmaia-Final-Unique"
+client_id = "" # Boş bırakıldı, yeni app oluşturulacak
 application_url = "https://mailsvel.gustoapp.net"
 embedded = true
 
+[build]
+automatically_update_urls_on_dev = true
+
 [access_scopes]
+# KORUMALI VERİLER (CUSTOMERS) ÇIKARILDI - HATA ALMAMAK İÇİN ŞART!
 scopes = "write_products,write_orders,write_draft_orders,read_draft_orders,write_marketing_events,read_marketing_events,read_checkouts"
 
 [auth]
@@ -16,6 +21,9 @@ redirect_urls = [
 [webhooks]
 api_version = "2026-01"
 
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "/api/webhooks/app/uninstalled"
 
 [app_proxy]
 url = "https://mailsvel.gustoapp.net"

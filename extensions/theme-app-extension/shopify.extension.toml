@@ -2,6 +2,7 @@ api_version = "2026-01"
 
 [[extensions]]
 # uid = "4ad141bc-f62b-3fcc-8c54-586faabb348444fbbb03"
+uid = "7b655f7f-7e4f-af90-1550-b978214fac513f28d85b"
 type = "theme_app_extension"
 name = "Nurvella"
 handle = "nurvella"
