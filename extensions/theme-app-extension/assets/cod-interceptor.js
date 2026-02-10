@@ -1,6 +1,8 @@
 /**
- * COD Interceptor - Fotoğrafa Birebir Uygun Tasarım
- * Büyük fontlar, mobilde tam sayfa
+ * COD Interceptor - Premium Gold Edition (Single Scroll Version)
+ * Renk: #B4853D
+ * Font: Montserrat
+ * Fix: Tek parça scroll (Full body scroll)
  */
 
 (function () {
@@ -9,98 +11,47 @@
   let isPopupOpen = false;
   let isProcessing = false;
   let selectedPaymentMethod = "online";
-  let selectedCodPaymentType = null; // null, "cash" veya "card"
+  let selectedCodPaymentType = null;
   let verificationCode = null;
 
+  // Şehir Listesi
   const turkishCities = [
-    "Adana",
-    "Adıyaman",
-    "Afyonkarahisar",
-    "Ağrı",
-    "Aksaray",
-    "Amasya",
-    "Ankara",
-    "Antalya",
-    "Ardahan",
-    "Artvin",
-    "Aydın",
-    "Balıkesir",
-    "Bartın",
-    "Batman",
-    "Bayburt",
-    "Bilecik",
-    "Bingöl",
-    "Bitlis",
-    "Bolu",
-    "Burdur",
-    "Bursa",
-    "Çanakkale",
-    "Çankırı",
-    "Çorum",
-    "Denizli",
-    "Diyarbakır",
-    "Düzce",
-    "Edirne",
-    "Elazığ",
-    "Erzincan",
-    "Erzurum",
-    "Eskişehir",
-    "Gaziantep",
-    "Giresun",
-    "Gümüşhane",
-    "Hakkari",
-    "Hatay",
-    "Iğdır",
-    "Isparta",
-    "İstanbul",
-    "İzmir",
-    "Kahramanmaraş",
-    "Karabük",
-    "Karaman",
-    "Kars",
-    "Kastamonu",
-    "Kayseri",
-    "Kilis",
-    "Kırıkkale",
-    "Kırklareli",
-    "Kırşehir",
-    "Kocaeli",
-    "Konya",
-    "Kütahya",
-    "Malatya",
-    "Manisa",
-    "Mardin",
-    "Mersin",
-    "Muğla",
-    "Muş",
-    "Nevşehir",
-    "Niğde",
-    "Ordu",
-    "Osmaniye",
-    "Rize",
-    "Sakarya",
-    "Samsun",
-    "Şanlıurfa",
-    "Siirt",
-    "Sinop",
-    "Şırnak",
-    "Sivas",
-    "Tekirdağ",
-    "Tokat",
-    "Trabzon",
-    "Tunceli",
-    "Uşak",
-    "Van",
-    "Yalova",
-    "Yozgat",
-    "Zonguldak",
+    "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
+    "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur",
+    "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Düzce", "Edirne", "Elazığ", "Erzincan",
+    "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Iğdır", "Isparta", "İstanbul",
+    "İzmir", "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu", "Kayseri", "Kilis", "Kırıkkale", "Kırklareli",
+    "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Mardin", "Mersin", "Muğla", "Muş",
+    "Nevşehir", "Niğde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Şanlıurfa", "Siirt", "Sinop",
+    "Şırnak", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak", "Van", "Yalova", "Yozgat", "Zonguldak"
   ];
 
-  console.log("🚀 COD Interceptor v3 yüklendi");
+  console.log("🚀 COD Interceptor v5.1 (Single Scroll) Yüklendi");
 
-  function isAppEnabled() {
-    const appBlock = document.getElementById("cod-interceptor-active");
-    return appBlock && appBlock.dataset.enabled === "true";
+  // Yardımcı Fonksiyonlar
+  function formatMoney(value) {
+    if (value === undefined || value === null || value === "") return "0.00 TL";
+
+    let amount = 0;
+    if (typeof value === 'number') {
+      if (!Number.isInteger(value)) {
+        amount = value;
+      } else {
+        amount = value / 100;
+      }
+    }
+    else if (typeof value === 'string') {
+      if (value.includes('.') || value.includes(',')) {
+        amount = parseFloat(value.replace(',', '.'));
+      } else {
+        amount = parseInt(value, 10) / 100;
+      }
+    }
+
+    return new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
+    }).format(amount);
   }
 
   function isCheckoutUrl(url) {
@@ -113,6 +64,7 @@
     );
   }
 
+  // Popup Açma
   function openCODPopup(event) {
     if (isPopupOpen || isProcessing) {
       if (event) {
@@ -140,1347 +92,1174 @@
       })
       .catch((err) => {
         console.error("Cart yükleme hatası:", err);
-        createPopup(null);
+        createPopup({ items: [], total_price: 0, item_count: 0 });
         isProcessing = false;
       });
   }
 
-  // Tailwind temizleme fonksiyonu
-  function removeTailwindScripts() {
-    const tailwindCdn = document.getElementById("cod-tailwind-cdn");
-    if (tailwindCdn) {
-      tailwindCdn.remove();
-    }
+  // CSS Enjeksiyonu (Güncellendi: Tek Parça Scroll)
+  function injectStyles() {
+    if (document.getElementById("cod-custom-styles")) return;
 
-    const tailwindConfig = document.getElementById("cod-tailwind-config");
-    if (tailwindConfig) {
-      tailwindConfig.remove();
-    }
+    const style = document.createElement("style");
+    style.id = "cod-custom-styles";
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+      /* --- RESET & SCOPE --- */
+      #cod-popup-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-color: rgba(0, 0, 0, 0.6) !important;
+        z-index: 2147483647 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        backdrop-filter: blur(5px) !important;
+        opacity: 0;
+        animation: codFadeIn 0.3s forwards !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+      }
+
+      #cod-popup-overlay * {
+        box-sizing: border-box !important;
+        font-family: 'Montserrat', sans-serif !important;
+        line-height: 1.5 !important;
+        -webkit-font-smoothing: antialiased !important;
+      }
+
+      /* --- MODAL --- */
+      .cod-modal {
+        background: white !important;
+        width: 95% !important;
+        max-width: 1100px !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        border-radius: 16px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important; /* Header sabit kalsın, content kaysın istiyorsan hidden */
+        transform: scale(0.95);
+        opacity: 0;
+        animation: codScaleIn 0.3s 0.1s forwards !important;
+        position: relative !important;
+        margin: 0 !important;
+      }
+
+      @media (max-width: 768px) {
+        .cod-modal {
+          width: 100% !important;
+          height: 100% !important;
+          max-height: 100vh !important;
+          border-radius: 0 !important;
+        }
+      }
+
+      /* --- HEADER --- */
+      .cod-header {
+        padding: 16px 24px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        background: white !important;
+        min-height: 70px !important;
+        flex-shrink: 0 !important; /* Header büzülmesin */
+        z-index: 10 !important;
+        position: relative !important;
+      }
+
+      .cod-title {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+      }
+
+      .cod-subtitle {
+        font-size: 0.875rem !important;
+        color: #6b7280 !important;
+        margin: 4px 0 0 0 !important;
+        font-weight: 400 !important;
+      }
+
+      .cod-close-btn {
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 8px !important;
+        border-radius: 50% !important;
+        color: #9ca3af !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        transition: background 0.2s !important;
+        box-shadow: none !important;
+      }
+
+      .cod-close-btn:hover {
+        background: #f3f4f6 !important;
+        color: #4b5563 !important;
+      }
+
+      /* --- CONTENT LAYOUT (TEK PARÇA SCROLL İÇİN GÜNCELLENDİ) --- */
+      .cod-content {
+        flex: 1 !important;
+        /* İçerik taşarsa ana container scroll olsun */
+        overflow-y: auto !important; 
+        display: grid !important;
+        grid-template-columns: 1fr 1.2fr !important;
+        background: white !important;
+        /* Scrollbar'ın düzgün çalışması için */
+        height: 100% !important; 
+        align-items: start !important; /* İçerikleri yukarı yasla */
+      }
+
+      @media (max-width: 768px) {
+        .cod-content {
+          grid-template-columns: 1fr !important;
+          display: block !important;
+        }
+      }
+
+      /* --- LEFT PANEL (CART) --- */
+      .cod-cart-panel {
+        background: #f9fafb !important;
+        padding: 24px !important;
+        border-right: 1px solid #e5e7eb !important;
+        display: flex !important;
+        flex-direction: column !important;
+        /* Sabit yükseklik ve iç scroll kaldırıldı */
+        height: auto !important; 
+        overflow: visible !important; 
+      }
+      
+      @media (max-width: 768px) {
+        .cod-cart-panel {
+          border-right: none !important;
+          border-bottom: 1px solid #e5e7eb !important;
+        }
+      }
+
+      .cod-section-title {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        margin: 0 0 16px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+      }
+
+      .cod-cart-items {
+        /* İç scroll kaldırıldı, uzamasına izin verildi */
+        flex: none !important; 
+        overflow-y: visible !important; 
+        padding-right: 0 !important;
+        margin-bottom: 16px !important;
+        height: auto !important;
+      }
+
+      .cod-cart-item {
+        background: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+        margin-bottom: 12px !important;
+        position: relative !important;
+        display: block !important;
+      }
+
+      .cod-item-header {
+        display: flex !important;
+        gap: 12px !important;
+        margin-bottom: 12px !important;
+        align-items: flex-start !important;
+      }
+
+      .cod-item-img {
+        width: 64px !important;
+        height: 64px !important;
+        border-radius: 8px !important;
+        object-fit: cover !important;
+        background: #f3f4f6 !important;
+        border: none !important;
+        display: block !important;
+      }
+
+      .cod-item-info {
+        flex: 1 !important;
+      }
+
+      .cod-item-info h4 {
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #1f2937 !important;
+        margin: 0 0 4px 0 !important;
+        line-height: 1.3 !important;
+        padding: 0 !important;
+      }
+
+      .cod-item-info p {
+        font-size: 0.85rem !important;
+        color: #6b7280 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .cod-item-actions {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-top: 1px solid #f3f4f6 !important;
+        padding-top: 12px !important;
+        width: 100% !important;
+      }
+
+      .cod-qty-control {
+        display: flex !important;
+        align-items: center !important;
+        background: #f3f4f6 !important;
+        border-radius: 8px !important;
+        padding: 4px !important;
+        gap: 0 !important;
+        width: auto !important;
+      }
+
+      .cod-qty-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: none !important;
+        background: white !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 16px !important;
+      }
+
+      .cod-qty-btn:hover {
+        background: #B4853D !important;
+        color: white !important;
+      }
+
+      .cod-qty-val {
+        width: 32px !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        color: #111827 !important;
+        display: inline-block !important;
+      }
+
+      .cod-item-price {
+        font-weight: 700 !important;
+        color: #111827 !important;
+        font-size: 1rem !important;
+      }
+
+      .cod-discount-badge {
+        position: absolute !important;
+        top: -8px !important;
+        right: -8px !important;
+        background: #ef4444 !important;
+        color: white !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        padding: 4px 8px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
+        z-index: 10 !important;
+        line-height: 1 !important;
+      }
+
+      .cod-cart-total {
+        margin-top: auto !important;
+        padding-top: 20px !important;
+        border-top: 2px dashed #e5e7eb !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+      }
+
+      .cod-total-label {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+      }
+
+      .cod-total-val {
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: #B4853D !important;
+      }
+
+      /* --- RIGHT PANEL (FORM) --- */
+      .cod-form-panel {
+        padding: 24px !important;
+        background: white !important;
+        /* Sabit yükseklik ve iç scroll kaldırıldı */
+        height: auto !important; 
+        overflow: visible !important;
+      }
+
+      /* --- PAYMENT OPTIONS --- */
+      .cod-payment-options {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-bottom: 24px !important;
+      }
+
+      .cod-radio-label {
+        display: flex !important;
+        align-items: center !important;
+        padding: 16px !important;
+        border: 2px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        background: white !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+
+      .cod-radio-label:hover {
+        border-color: #B4853D !important;
+        background: #fffcf5 !important;
+      }
+
+      .cod-radio-label.selected {
+        border-color: #B4853D !important;
+        background: #fff8eb !important;
+        box-shadow: 0 0 0 1px #B4853D !important;
+      }
+
+      .cod-radio-input {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        width: 20px !important;
+        height: 20px !important;
+        border: 2px solid #d1d5db !important;
+        border-radius: 50% !important;
+        margin: 0 16px 0 0 !important;
+        position: relative !important;
+        flex-shrink: 0 !important;
+        background: white !important;
+        outline: none !important;
+        cursor: pointer !important;
+      }
+
+      .cod-radio-input:checked {
+        border-color: #B4853D !important;
+        background: #B4853D !important;
+      }
+
+      .cod-radio-input:checked::after {
+        content: '' !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 8px !important;
+        height: 8px !important;
+        background: white !important;
+        border-radius: 50% !important;
+        display: block !important;
+      }
+
+      .cod-radio-content {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .cod-radio-title {
+        font-weight: 700 !important;
+        color: #111827 !important;
+        font-size: 1rem !important;
+        margin-bottom: 2px !important;
+      }
+
+      .cod-radio-desc {
+        font-size: 0.85rem !important;
+        color: #6b7280 !important;
+        font-weight: 400 !important;
+      }
+
+      .cod-badge {
+        background: #B4853D !important;
+        color: white !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        padding: 4px 10px !important;
+        border-radius: 20px !important;
+        white-space: nowrap !important;
+      }
+
+      /* --- FORM FIELDS --- */
+      .cod-form-container {
+        display: none;
+        animation: codSlideDown 0.3s ease-out !important;
+        width: 100% !important;
+      }
+
+      .cod-form-group {
+        margin-bottom: 16px !important;
+        width: 100% !important;
+      }
+
+      .cod-label {
+        display: block !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        margin-bottom: 8px !important;
+        text-align: left !important;
+        text-transform: none !important;
+      }
+
+      .cod-required {
+        color: #ef4444 !important;
+        margin-left: 2px !important;
+      }
+
+      .cod-input-wrapper {
+        position: relative !important;
+        width: 100% !important;
+      }
+
+      .cod-icon {
+        position: absolute !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        color: #9ca3af !important;
+        pointer-events: none !important;
+        font-size: 1.2rem !important;
+        z-index: 2 !important;
+      }
+
+      .cod-input, .cod-select, .cod-textarea {
+        width: 100% !important;
+        padding: 12px 16px 12px 42px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 10px !important;
+        font-size: 1rem !important;
+        color: #1f2937 !important;
+        transition: all 0.2s !important;
+        background-color: white !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        height: auto !important;
+        min-height: 48px !important;
+        -webkit-appearance: none !important;
+      }
+
+      .cod-textarea {
+        padding-left: 16px !important;
+        resize: vertical !important;
+        min-height: 100px !important;
+      }
+
+      .cod-input:focus, .cod-select:focus, .cod-textarea:focus {
+        outline: none !important;
+        border-color: #B4853D !important;
+        box-shadow: 0 0 0 3px rgba(180, 133, 61, 0.2) !important;
+        background-color: white !important;
+      }
+
+      .cod-input::placeholder, .cod-textarea::placeholder {
+        color: #9ca3af !important;
+        opacity: 1 !important;
+      }
+
+      /* Phone Verification Button */
+      .cod-verify-btn {
+        position: absolute !important;
+        right: 8px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background: #B4853D !important;
+        color: white !important;
+        border: none !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: background 0.2s !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 3 !important;
+        white-space: nowrap !important;
+      }
+
+      .cod-verify-btn:disabled {
+        background: #e5e7eb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+      }
+
+      .cod-verify-btn:hover:not(:disabled) {
+        background: #9a7234 !important;
+      }
+
+      /* COD Type Selector Grid */
+      .cod-type-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
+
+      .cod-type-option {
+        border: 2px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        transition: all 0.2s !important;
+        background: white !important;
+        height: auto !important;
+        min-height: 100px !important;
+      }
+
+      .cod-type-option:hover {
+        border-color: #B4853D !important;
+        background: #fffcf5 !important;
+      }
+
+      .cod-type-option.selected {
+        border-color: #B4853D !important;
+        background: #fff8eb !important;
+      }
+
+      .cod-type-icon {
+        width: 48px !important;
+        height: 48px !important;
+        background: #f3f4f6 !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #4b5563 !important;
+        transition: all 0.2s !important;
+        font-size: 24px !important;
+      }
+
+      .cod-type-option.selected .cod-type-icon {
+        background: #B4853D !important;
+        color: white !important;
+      }
+
+      .cod-type-label {
+        font-weight: 600 !important;
+        color: #374151 !important;
+        font-size: 0.95rem !important;
+      }
+
+      /* --- SUBMIT BUTTON --- */
+      .cod-submit-btn {
+        width: 100% !important;
+        background: #B4853D !important;
+        color: white !important;
+        border: none !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+        margin-top: 24px !important;
+        box-shadow: 0 4px 6px rgba(180, 133, 61, 0.25) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+      }
+
+      .cod-submit-btn:hover {
+        background: #9a7234 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(180, 133, 61, 0.3) !important;
+      }
+
+      .cod-submit-btn:disabled {
+        background: #9ca3af !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      /* --- TOAST --- */
+      #cod-toast-container {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 2147483648 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        pointer-events: none !important;
+      }
+
+      .cod-toast {
+        background: #1f2937 !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        animation: codSlideLeft 0.3s forwards !important;
+        min-width: 300px !important;
+        pointer-events: auto !important;
+        font-size: 0.95rem !important;
+      }
+
+      .cod-toast.success { border-left: 4px solid #10b981 !important; }
+      .cod-toast.error { border-left: 4px solid #ef4444 !important; }
+      .cod-toast.info { border-left: 4px solid #3b82f6 !important; }
+
+      /* --- ANIMATIONS --- */
+      @keyframes codFadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes codScaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      @keyframes codSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes codSlideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes codSpin { to { transform: rotate(360deg); } }
+
+      .cod-spinner {
+        width: 20px !important;
+        height: 20px !important;
+        border: 2px solid rgba(255,255,255,0.3) !important;
+        border-top-color: white !important;
+        border-radius: 50% !important;
+        animation: codSpin 0.8s linear infinite !important;
+        display: inline-block !important;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
-  function createPopup(cartData) {
-    if (document.getElementById("cod-popup-overlay")) {
-      return;
+  // Toast Gösterim
+  function showToast(message, type = "info") {
+    let container = document.getElementById("cod-toast-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "cod-toast-container";
+      document.body.appendChild(container);
     }
 
+    const toast = document.createElement("div");
+    toast.className = `cod-toast ${type}`;
+
+    let icon = '';
+    if (type === 'success') icon = '✓';
+    else if (type === 'error') icon = '✕';
+    else icon = 'ℹ';
+
+    toast.innerHTML = `
+      <span style="font-weight:bold; font-size:1.2rem; margin-right:8px;">${icon}</span>
+      <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      toast.style.transition = 'all 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
+  // Popup Oluşturma (HTML Structure aynı, classlar stabilize edildi)
+  function createPopup(cartData) {
+    if (document.getElementById("cod-popup-overlay")) return;
+
+    injectStyles();
     isPopupOpen = true;
     window.codCartData = cartData;
 
-    // Tailwind CSS CDN ekle
-    if (!document.getElementById("cod-tailwind-cdn")) {
-      const tailwindScript = document.createElement("script");
-      tailwindScript.id = "cod-tailwind-cdn";
-      tailwindScript.src = "https://cdn.tailwindcss.com";
-      document.head.appendChild(tailwindScript);
-
-      // Tailwind Config ekle
-      const tailwindConfig = document.createElement("script");
-      tailwindConfig.id = "cod-tailwind-config";
-      tailwindConfig.textContent = `
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                orange: {
-                  50: '#fff7ed',
-                  100: '#ffedd5',
-                  200: '#fed7aa',
-                  300: '#fdba74',
-                  400: '#fb923c',
-                  500: '#f97316',
-                  600: '#ea580c',
-                  700: '#c2410c',
-                  800: '#9a3412',
-                  900: '#7c2d12',
-                }
-              }
-            }
-          }
-        }
-      `;
-      document.head.appendChild(tailwindConfig);
-    }
-
-    // MutationObserver ile overlay kaldırılmasını izle
-    const observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        mutation.removedNodes.forEach(function (node) {
-          if (node.id === "cod-popup-overlay") {
-            removeTailwindScripts();
-            observer.disconnect();
-          }
-        });
-      });
-    });
-
-    observer.observe(document.body, { childList: true });
-
-    // Sayfa görünür olduğunda butonu sıfırla (geri tuşu için)
-    const resetButtonOnReturn = function () {
-      setTimeout(() => {
-        const btn = document.getElementById("payment-action-btn");
-        const finalTotalEl = document.getElementById("final-total");
-        if (btn && finalTotalEl && btn.disabled) {
-          btn.disabled = false;
-          btn.innerHTML = `Siparişi Tamamla - ${finalTotalEl.textContent}`;
-        }
-      }, 100);
-    };
-
-    document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) {
-        resetButtonOnReturn();
-      }
-    });
-
-    window.addEventListener("focus", resetButtonOnReturn);
-
     const overlay = document.createElement("div");
     overlay.id = "cod-popup-overlay";
-    overlay.className =
-      "fixed inset-0 bg-black bg-opacity-50 z-[999999999999999999999999999999] flex items-center justify-center p-0 md:p-4";
-    overlay.style.fontFamily =
-      "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
+    // HTML Yapısı
     overlay.innerHTML = `
-      <style>
-        /* Sadece popup içindeki elementlere özel stiller */
-        #cod-popup-overlay * {
-          font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-        }
-        
-        /* Radio button renkleri */
-        #cod-popup-overlay input[type="radio"] {
-          -webkit-appearance: none !important;
-          -moz-appearance: none !important;
-          appearance: none !important;
-          width: 15px !important;
-          height: 15px !important;
-          border: 2px solid #d1d5db !important;
-          border-radius: 50% !important;
-          outline: none !important;
-          cursor: pointer !important;
-          position: relative !important;
-          background-color: white !important;
-        }
-        
-        #cod-popup-overlay input[type="radio"]:checked {
-          border-color: #1c1d1d !important;
-          background-color: #1c1d1d !important;
-        }
-        
-        #cod-popup-overlay input[type="radio"]:checked::before {
-          content: '' !important;
-          position: absolute !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;
-          width: 8px !important;
-          height: 8px !important;
-          border-radius: 50% !important;
-          background-color: white !important;
-        }
-        
-        #cod-popup-overlay input[type="radio"]:focus {
-          box-shadow: 0 0 0 3px rgba(124, 202, 0, 0.2) !important;
-        }
-        
-        /* Kırmızı border animasyonu */
-        @keyframes errorShake {
-          0%, 100% {
-            border-color: #ef4444;
-          }
-          50% {
-            border-color: #dc2626;
-          }
-        }
-        
-        .payment-type-error {
-          animation: errorShake 0.5s ease-in-out 8;
-          border-color: #ef4444 !important;
-        }
-        
-        /* Toast Notification Animasyonları */
-        @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        
-        @keyframes slideOutRight {
-          from {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          to {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-        }
-        
-        .toast-enter {
-          animation: slideInRight 0.3s ease-out forwards;
-        }
-        
-        .toast-exit {
-          animation: slideOutRight 0.3s ease-in forwards;
-        }
-        
-        /* Kod girişi alanı animasyonu */
-        @keyframes expandDown {
-          from {
-            max-height: 0;
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            max-height: 200px;
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .code-input-enter {
-          animation: expandDown 0.3s ease-out forwards;
-        }
-        
-        /* Form fade out/in animasyonları */
-        @keyframes fadeOutUp {
-          from {
-            opacity: 1;
-            transform: translateY(0);
-            max-height: 2000px;
-          }
-          to {
-            opacity: 0;
-            transform: translateY(-20px);
-            max-height: 0;
-          }
-        }
-        
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-            max-height: 0;
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-            max-height: 2000px;
-          }
-        }
-        
-        .form-fade-out {
-          animation: fadeOutUp 0.4s ease-out forwards;
-        }
-        
-        .form-fade-in {
-          animation: fadeInDown 0.4s ease-out forwards;
-        }
-      </style>
-      
-      <!-- Toast Container -->
-      <div id="toast-container" class="fixed top-4 right-4 z-[1000000] flex flex-col gap-3" style="pointer-events: none;">
-      </div>
-      <div class="bg-white w-full h-full md:h-auto md:rounded-2xl md:shadow-2xl md:max-w-6xl md:max-h-[95vh] overflow-hidden flex flex-col">
-        <!-- Header -->
-        <div class="flex items-center justify-between p-3 border-b border-gray-200 bg-white">
+      <div class="cod-modal">
+        <div class="cod-header">
           <div>
-            <h2 class="text-xl font-medium text-gray-900">Nurvella Ödeme</h2>
-            <p class="text-base text-gray-500 mt-1">Siparişinizi saniyeler içinde tamamlayın</p>
+            <h2 class="cod-title">Güvenli Ödeme</h2>
+            <p class="cod-subtitle">Siparişinizi hızlıca tamamlayın</p>
           </div>
-          <button onclick="window.closeCODPopup()" class="text-gray-400 hover:text-gray-600 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+          <button class="cod-close-btn" onclick="window.closeCODPopup()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
 
-        <!-- Content -->
-        <div class="flex-1 overflow-y-auto">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            <!-- Sol Panel - Sipariş Özeti -->
-            <div style="background-color: #f8f8f8;" class="p-2 lg:border-r border-gray-200">
-              <h3 class="text-xl font-medium text-gray-900 mb-5">Sipariş Özeti</h3>
-              
-              <div id="cart-items-container" class="space-y-4 mb-6">
-                <!-- Ürünler buraya yüklenecek -->
+        <div class="cod-content">
+          <div class="cod-cart-panel">
+            <h3 class="cod-section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              Sepet Özeti
+            </h3>
+            
+            <div id="cod-cart-items-container" class="cod-cart-items">
               </div>
 
-              <div class="flex justify-between items-center pt-5 mt-5 border-t border-gray-300">
-                <span class="text-xl font-medium text-gray-900">Toplam</span>
-                <span class="text-xl font-semibold text-[#1c1d1d]" id="total-amount"></span>
+            <div class="cod-cart-total">
+              <span class="cod-total-label">Toplam Tutar</span>
+              <span class="cod-total-val" id="cod-total-amount">0.00 TL</span>
+            </div>
+          </div>
+
+          <div class="cod-form-panel">
+            <h3 class="cod-section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              Ödeme Yöntemi
+            </h3>
+
+            <div class="cod-payment-options">
+              <label class="cod-radio-label selected" onclick="window.selectPaymentMethod('online', this)">
+                <input type="radio" name="payment_method" value="online" checked class="cod-radio-input">
+                <div class="cod-radio-content">
+                  <span class="cod-radio-title">Online Ödeme</span>
+                  <span class="cod-radio-desc">Kredi Kartı / Banka Kartı ile güvenli ödeme</span>
+                </div>
+                <span class="cod-badge">Önerilen</span>
+              </label>
+
+              <label class="cod-radio-label" onclick="window.selectPaymentMethod('cod', this)">
+                <input type="radio" name="payment_method" value="cod" class="cod-radio-input">
+                <div class="cod-radio-content">
+                  <span class="cod-radio-title">Kapıda Ödeme</span>
+                  <span class="cod-radio-desc">Ürünü teslim alırken nakit veya kartla ödeyin</span>
+                </div>
+              </label>
+            </div>
+
+            <div id="cod-form-container" class="cod-form-container">
+              <div class="cod-form-group">
+                <label class="cod-label">Telefon Numarası <span class="cod-required">*</span></label>
+                <div class="cod-input-wrapper">
+                  <span class="cod-icon">📞</span>
+                  <input type="tel" id="cod-phone" placeholder="(5XX) XXX XX XX" class="cod-input" style="padding-right: 110px !important;">
+                  <button id="cod-verify-btn" onclick="window.sendVerificationCode()" disabled class="cod-verify-btn">Kod Gönder</button>
+                </div>
+                <div id="cod-verify-success" style="display:none; color:#10b981; font-size:0.85rem; margin-top:4px; font-weight:600;">✓ Numara Doğrulandı</div>
+              </div>
+
+              <div id="cod-code-area" class="cod-form-group" style="display:none;">
+                <label class="cod-label">SMS Doğrulama Kodu</label>
+                <div class="cod-input-wrapper" style="display:flex; gap:8px;">
+                  <input type="text" id="cod-sms-code" placeholder="4 haneli kod" maxlength="4" class="cod-input" style="text-align:center !important; padding-left:16px !important; padding-right:16px !important;">
+                  <button onclick="window.verifyCode()" class="cod-verify-btn" style="position:static !important; transform:none !important; height:auto !important; width: 100px !important;">Onayla</button>
+                </div>
+              </div>
+
+              <div class="cod-form-group">
+                <label class="cod-label">Ad Soyad <span class="cod-required">*</span></label>
+                <div class="cod-input-wrapper">
+                  <span class="cod-icon">👤</span>
+                  <input type="text" id="cod-name" placeholder="Adınız Soyadınız" class="cod-input">
+                </div>
+              </div>
+
+              <div class="cod-form-group">
+                <label class="cod-label">Şehir <span class="cod-required">*</span></label>
+                <div class="cod-input-wrapper">
+                  <span class="cod-icon">📍</span>
+                  <select id="cod-city" class="cod-select">
+                    <option value="">Seçiniz</option>
+                    ${turkishCities.map(city => `<option value="${city}">${city}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div class="cod-form-group">
+                <label class="cod-label">Adres <span class="cod-required">*</span></label>
+                <textarea id="cod-address" placeholder="Mahalle, Sokak, Kapı No, İlçe..." class="cod-textarea"></textarea>
+              </div>
+
+              <div class="cod-form-group">
+                <label class="cod-label">Ödeme Tercihi <span class="cod-required">*</span></label>
+                <div class="cod-type-grid">
+                  <div class="cod-type-option" onclick="window.selectCodType('cash', this)">
+                    <div class="cod-type-icon">💵</div>
+                    <span class="cod-type-label">Nakit</span>
+                  </div>
+                  <div class="cod-type-option" onclick="window.selectCodType('card', this)">
+                    <div class="cod-type-icon">💳</div>
+                    <span class="cod-type-label">Kredi Kartı</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Sağ Panel - Ödeme Yöntemi ve Form -->
-            <div class="p-2">
-              <h3 class="text-xl font-medium text-gray-900 mb-5">Ödeme Yöntemi</h3>
-
-              <div class="space-y-3 mb-6">
-                <!-- Online Ödeme -->
-                <label class="flex items-center gap-4 p-4 border border-[#1c1d1d] bg-green-50 rounded-xl cursor-pointer transition-all payment-option payment-option-selected">
-                  <input type="radio" name="payment-method" value="online" checked class="mt-1 w-5 h-5 text-[#1c1d1d] focus:ring-[#1c1d1d]">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                      </svg>
-                      <span class="text-base font-bold text-gray-900">Online Ödeme</span>
-                    </div>
-                    <p class="text-sm text-gray-500">Kart veya cüzdan ile online ödeme yapın - Doğrulama gerekli değil</p>
-                  </div>
-
-                  <span class="ml-auto px-2.5 py-1 bg-green-100 text-green-700 text-base font-medium rounded-full">Popüler</span>
-                </label>
-
-                <label class="flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer payment-option">
-                  <input type="radio" name="payment-method" value="cod" class="mt-1 w-5 h-5 text-[#1c1d1d] focus:ring-[#1c1d1d]">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                      </svg>
-                      <span class="text-base font-bold text-gray-900">Kapıda Ödeme</span>
-                    </div>
-                    <p class="text-sm text-gray-600">Ürünü teslim alırken ödeyin - Doğrulama gerekli</p>
-                  </div>
-                </label>
-              </div>
-
-              <!-- Form Container -->
-              <div id="cod-form-container" class="space-y-5 transition-all duration-300" style="display: none;">
-                <!-- WhatsApp Numarası -->
-                <div>
-                  <label class="flex items-center gap-2 text-base font-bold text-gray-900 mb-3">
-                    WhatsApp Numarası
-                    <span class="text-red-500">*</span>
-                  </label>
-                  
-                  <!-- Success Banner (Hidden by default) -->
-                  <div id="verification-success-banner" class="hidden mb-3 bg-green-50 border-2 border-green-500 rounded-lg p-4 flex items-center gap-3">
-                    <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="flex-1">
-                      <p class="text-green-900 text-base font-medium">Doğrulanmış WhatsApp: <span id="verified-phone-display"></span></p>
-                    </div>
-                    <button onclick="window.changePhoneNumber()" class="text-green-700 hover:text-green-900 font-medium text-base underline">
-                      Değiştir
-                    </button>
-                  </div>
-                  
-                  <div id="phone-input-container" class="flex gap-2">
-                    <div class="relative flex-1">
-                      <div class="absolute left-3 top-1/2 -translate-y-1/2 text-green-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 301 201"><g fill="none"><path fill="#e30a17" d="M.5.5h300v200H.5z"/><circle cx="106.75" cy="100.5" r="50" fill="#fff"/><circle cx="119.25" cy="100.5" r="40" fill="#e30a17"/><path fill="#fff" d="m146.334 100.5l45.225 14.695l-27.951-38.472v47.553l27.951-38.471z"/></g></svg>
-                      </div>
-
-                      <button onclick="window.sendVerificationCode()" id="send-code-btn" disabled
-                      class="absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-transparent text-[#1c1d1d] rounded-lg transition-colors flex items-center justify-center cursor-not-allowed border border-[#1c1d1d]">
-                      Kod Gönder
-                    </button>
-                      <input type="tel" id="whatsapp-phone" placeholder="(501) 098 XXXX"
-                        class="w-full pl-14 pr-14 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-1 focus:ring-[#1c1d1d] focus:border-transparent placeholder:text-base">
-                    </div>
-                  </div>
-                  <p id="verification-warning-text" class="text-base text-red-500 mt-2">Sahte siparişleri önlemek için telefon numaranızı doğrulamanızı rica ederiz.</p>
-                </div>
-                
-                <!-- Kod Girişi Alanı (Dinamik) -->
-                <div id="verification-code-container" class="hidden overflow-hidden">
-                </div>
-
-                <!-- Ad Soyad -->
-                <div>
-                  <label class="text-base font-bold text-gray-900 mb-3 block">
-                    Ad Soyad
-                    <span class="text-red-500">*</span>
-                  </label>
-                  <div class="relative">
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                      </svg>
-                    </div>
-                    <input type="text" id="customer-name" placeholder="Adınız ve Soyadınız"
-                      class="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-lg text-xl focus:outline-none focus:ring-1 focus:ring-[#1c1d1d] focus:border-transparent">
-                  </div>
-                </div>
-
-                <!-- Şehir -->
-                <div>
-                  <label class="text-base font-bold text-gray-900 mb-3 block">
-                    Şehir
-                    <span class="text-red-500">*</span>
-                  </label>
-                  <div class="relative">
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none z-10">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                      </svg>
-                    </div>
-                    <select id="customer-city"
-                      class="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-lg text-xl focus:outline-none focus:ring-1 focus:ring-[#1c1d1d] focus:border-transparent bg-white appearance-none">
-                      <option value="">Şehir seçin</option>
-                      ${turkishCities.map((city) => `<option value="${city}">${city}</option>`).join("")}
-                    </select>
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Adres -->
-                <div>
-                  <label class="text-base font-bold text-gray-900 mb-3 block">
-                    Adres
-                    <span class="text-red-500">*</span>
-                  </label>
-                    <textarea
-                    rows="6"
-                    type="text" id="customer-address" placeholder="Daire no, Kat, Bina no, Sokak" class="w-full p-4 border border-gray-300 rounded-lg text-xl focus:outline-none focus:ring-1 focus:ring-[#1c1d1d] focus:border-transparent"></textarea>
-                </div>
-
-                <!-- Kapıda Ödeme Şekli -->
-                <div>
-                  <label class="text-base font-bold text-gray-900 mb-3 block">
-                    Kapıda Ödeme Şeklinizi Seçin
-                    <span class="text-red-500">*</span>
-                  </label>
-                  
-                  <div class="grid grid-cols-2 gap-3" id="cod-payment-type-container">
-                    <!-- Kapıda Nakit -->
-                    <label class="cod-payment-type-option flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-xl cursor-pointer transition-all hover:shadow-md">
-                      <input type="radio" name="cod-payment-type" value="cash" class="hidden">
-                      <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
-                        <svg class="w-7 h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                      </div>
-                      <span class="text-lg font-semibold text-gray-900 text-center">Kapıda Nakit</span>
-                    </label>
-
-                    <!-- Kapıda Kredi Kartı -->
-                    <label class="cod-payment-type-option flex flex-col items-center gap-3 p-4 border-2 border-gray-200 bg-white rounded-xl cursor-pointer transition-all hover:shadow-md">
-                      <input type="radio" name="cod-payment-type" value="card" class="hidden">
-                      <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full">
-                        <svg class="w-7 h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
-                      </div>
-                      <span class="text-lg font-semibold text-gray-900 text-center">Kapıda Kredi Kartı</span>
-                    </label>
-                  </div>
-                </div>
-
-              </div>
-              
-              <!-- Tek Buton - Hem COD hem Online için (Form dışında) -->
-              <button onclick="window.handlePaymentAction()" id="payment-action-btn"
-                class="w-full py-2.5 bg-[#1c1d1d] text-white rounded-lg text-base font-bold hover:bg-[#6bb300] transition-colors mt-2">
-                Siparişi Tamamla - <span id="final-total"></span>
-              </button>
+            <button id="cod-submit-btn" onclick="window.handleSubmit()" class="cod-submit-btn">
+              Online Ödeme Yap
+            </button>
+            <div style="text-align:center; font-size:0.8rem; color:#9ca3af; margin-top:12px; font-weight: 500;">
+              🔒 256-bit SSL ile güvenli ödeme
             </div>
+
           </div>
         </div>
       </div>
     `;
 
     document.body.appendChild(overlay);
-
     loadCartItems(cartData);
-    setupPaymentMethodListeners();
-    setupPhoneFormatting();
-    setupCodPaymentTypeListeners();
+    setupPhoneMask();
 
-    console.log("✅ Popup açıldı");
-
-    document.querySelector('#cod-popup-overlay').className = "fixed inset-0 bg-black bg-opacity-50 z-[99999999999999999999999999922999] flex items-center justify-center p-0 md:p-4";
-
-    document.querySelector('#cart-drawer').hide();
-  }
-
-  function setupCodPaymentTypeListeners() {
-    const paymentTypeOptions = document.querySelectorAll(
-      ".cod-payment-type-option",
-    );
-    const radios = document.querySelectorAll('input[name="cod-payment-type"]');
-
-    radios.forEach((radio) => {
-      radio.addEventListener("change", function () {
-        selectedCodPaymentType = this.value;
-
-        // Tüm seçenekleri sıfırla
-        paymentTypeOptions.forEach((opt) => {
-          opt.classList.remove(
-            "border-[#1c1d1d]",
-            "bg-green-50",
-            "cod-payment-selected",
-          );
-          opt.classList.add("border-gray-200", "bg-white");
-
-          // Icon container'ı güncelle
-          const iconContainer = opt.querySelector("div");
-          iconContainer.classList.remove("bg-white");
-          iconContainer.classList.add("bg-gray-100");
-
-          // Icon rengini güncelle
-          const icon = opt.querySelector("svg");
-          icon.classList.remove("text-[#1c1d1d]");
-          icon.classList.add("text-gray-600");
-        });
-
-        // Seçili olanı vurgula
-        const selectedOption = this.closest(".cod-payment-type-option");
-        selectedOption.classList.remove("border-gray-200", "bg-white");
-        selectedOption.classList.add(
-          "border-[#1c1d1d]",
-          "bg-green-50",
-          "cod-payment-selected",
-        );
-
-        // Icon container'ı güncelle
-        const iconContainer = selectedOption.querySelector("div");
-        iconContainer.classList.remove("bg-gray-100");
-        iconContainer.classList.add("bg-white");
-
-        // Icon rengini güncelle
-        const icon = selectedOption.querySelector("svg");
-        icon.classList.remove("text-gray-600");
-        icon.classList.add("text-[#1c1d1d]");
-
-        console.log("💳 Kapıda ödeme şekli seçildi:", this.value);
-      });
-    });
-  }
-
-  function loadCartItems(cartData) {
-    const container = document.getElementById("cart-items-container");
-    const subtotalEl = document.getElementById("subtotal-amount");
-    const totalEl = document.getElementById("total-amount");
-    const finalTotalEl = document.getElementById("final-total");
-
-    if (!cartData || !cartData.items || cartData.items.length === 0) {
-      container.innerHTML =
-        '<p class="text-base text-gray-500">Sepetiniz boş</p>';
-      return;
+    // Sepet boşsa kapat
+    if (cartData.item_count === 0 && (!cartData.items || cartData.items.length === 0)) {
+      //alert("Sepetiniz boş!");
+      //window.closeCODPopup();
     }
-
-    container.innerHTML = cartData.items
-      .map((item) => {
-        console.log("item", item);
-
-        // İndirim kontrolü: original_line_price > line_price
-        const hasDiscount =
-          item.original_line_price >
-          item.line_price
-            .toString()
-            .substr(0, item.line_price.toString().length - 1);
-        const discount = hasDiscount
-          ? Math.round(
-            ((item.original_line_price - item.line_price) /
-              item.original_line_price) *
-            100,
-          )
-          : 0;
-
-        return `
-        <div class="relative bg-white p-4 rounded-lg border border-gray-200" data-item-key="${item.key}">
-          ${discount > 0 ? `<div class="absolute top-2 right-2 px-2.5 py-1 bg-red-600 text-white text-sm font-semibold rounded shadow-sm z-10">-${discount}%</div>` : ""}
-          
-            <div class="flex gap-4 items-center">
-              ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-14 h-14 object-cover rounded-md flex-shrink-0">` : ""}
-              
-              <div class="flex-1 min-w-0">
-                <h4 class="text-base font-semibold text-gray-900 mb-1">${item.title}</h4>
-                <p class="text-base text-gray-500">${item.variant_title || ""}</p>
-              </div>
-            
-            </div>
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center gap-3 mt-3 p-1 bg-[#f8f8f8] rounded">
-                <button onclick="window.updateCartQuantity('${item.key}', ${item.quantity - 1})" class="bg-white w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 transition-colors ${item.quantity <= 1 ? "opacity-50 cursor-not-allowed" : ""}" ${item.quantity <= 1 ? "disabled" : ""}>
-                  <span class="text-lg font-medium">
-                    -
-                  </span>
-                </button>
-                <span class="text-lg font-medium min-w-[2rem] text-center">${item.quantity}</span>
-                <button onclick="window.updateCartQuantity('${item.key}', ${item.quantity + 1})" class="w-8 h-8 flex items-center justify-center rounded bg-white hover:bg-gray-100 transition-colors">
-                  <span class="text-lg font-medium">+</span>
-                </button>
-              </div>
-            <div class="flex items-center gap-1.5 shrink-0">
-              ${hasDiscount
-            ? `<p class="text-base text-gray-400 line-through">${formatMoney(item.original_price)}</p>`
-            : ""
-          }
-              <p class="text-xl font-medium text-gray-900">${formatMoney(item.line_price)}</p>
-            </div>
-            </div>
-        </div>
-      `;
-      })
-      .join("");
-
-    const total = formatMoney(cartData.total_price);
-    if (totalEl) totalEl.textContent = total;
-    if (finalTotalEl) finalTotalEl.textContent = total;
   }
 
-  function setupPaymentMethodListeners() {
-    const paymentOptions = document.querySelectorAll(".payment-option");
-    const radios = document.querySelectorAll('input[name="payment-method"]');
+  // Fonksiyonlar Global Scope'a Ekleniyor
+  window.closeCODPopup = function () {
+    const overlay = document.getElementById("cod-popup-overlay");
+    if (overlay) {
+      overlay.style.opacity = 0;
+      setTimeout(() => overlay.remove(), 300);
+    }
+    isPopupOpen = false;
+  };
 
-    radios.forEach((radio) => {
-      radio.addEventListener("change", function () {
-        selectedPaymentMethod = this.value;
+  window.selectPaymentMethod = function (method, el) {
+    selectedPaymentMethod = method;
 
-        paymentOptions.forEach((opt) => {
-          opt.classList.remove(
-            "border-[#1c1d1d]",
-            "bg-green-50",
-            "payment-option-selected",
-          );
-          opt.classList.add("border-gray-200");
-        });
+    // Görsel seçim güncelleme
+    document.querySelectorAll('.cod-radio-label').forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
 
-        const selectedOption = this.closest(".payment-option");
-        selectedOption.classList.remove("border-gray-200");
-        selectedOption.classList.add(
-          "border-[#1c1d1d]",
-          "bg-green-50",
-          "payment-option-selected",
-        );
+    // Form görünürlüğü
+    const form = document.getElementById('cod-form-container');
+    const btn = document.getElementById('cod-submit-btn');
 
-        updatePaymentUI(this.value);
-        updatePaymentButton(this.value);
-      });
-    });
-  }
-
-  function updatePaymentUI(method) {
-    const codForm = document.getElementById("cod-form-container");
-
-    if (method === "online") {
-      // Form'u animasyonlu şekilde gizle
-      codForm.classList.remove("form-fade-in");
-      codForm.classList.add("form-fade-out");
-
-      setTimeout(() => {
-        codForm.style.display = "none";
-      }, 400);
+    if (method === 'online') {
+      form.style.display = 'none';
+      btn.innerText = 'Online Ödeme Yap';
     } else {
-      // Form'u animasyonlu şekilde göster
-      codForm.style.display = "block";
-      codForm.classList.remove("form-fade-out");
-      codForm.classList.add("form-fade-in");
-    }
-  }
-
-  function updatePaymentButton(method) {
-    const btn = document.getElementById("payment-action-btn");
-    const finalTotalEl = document.getElementById("final-total");
-
-    if (!btn || !finalTotalEl) return;
-
-    const finalTotal = finalTotalEl.textContent;
-
-    // Buton her zaman aynı görünüm ve metin
-    btn.innerHTML = `Siparişi Tamamla - ${finalTotal}`;
-    btn.className =
-      "w-full py-2 bg-[#1c1d1d] text-white rounded-lg text-2xl font-bold hover:bg-[#6bb300] transition-colors mt-2";
-
-    // Sadece onclick event değişiyor
-    if (method === "online") {
-      btn.onclick = window.proceedToOnlinePayment;
-    } else {
-      btn.onclick = window.completeOrder;
-    }
-  }
-
-  function setupPhoneFormatting() {
-    const phoneInput = document.getElementById("whatsapp-phone");
-    const sendBtn = document.getElementById("send-code-btn");
-
-    let lastValue = "";
-
-    phoneInput.addEventListener("input", function (e) {
-      // Sadece rakamları al
-      let value = e.target.value.replace(/\D/g, "");
-
-      // Maksimum 10 hane
-      if (value.length > 10) {
-        value = value.substring(0, 10);
-      }
-
-      // Formatla
-      let formatted = "";
-      if (value.length > 0) {
-        formatted = "(" + value.substring(0, 3);
-        if (value.length >= 4) {
-          formatted += ") " + value.substring(3, 6);
-          if (value.length >= 7) {
-            formatted += " " + value.substring(6, 10);
-          }
-        } else if (value.length === 3) {
-          formatted += ")";
-        }
-      }
-
-      e.target.value = formatted;
-      lastValue = value;
-
-      // Kod gönder butonunu aktif/pasif yap
-      if (value.length === 10) {
-        sendBtn.disabled = false;
-        sendBtn.className =
-          "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-[#1c1d1d] text-white rounded-lg hover:bg-[#6bb300] transition-colors flex items-center justify-center cursor-pointer";
-      } else {
-        sendBtn.disabled = true;
-        sendBtn.className =
-          "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-transparent text-[#1c1d1d] rounded-lg transition-colors flex items-center justify-center cursor-not-allowed border border-[#1c1d1d]";
-      }
-    });
-
-    // Backspace ve Delete tuşlarını dinle
-    phoneInput.addEventListener("keydown", function (e) {
-      if (e.key === "Backspace" || e.key === "Delete") {
-        e.preventDefault();
-
-        const currentValue = e.target.value.replace(/\D/g, "");
-
-        if (e.key === "Backspace" && currentValue.length > 0) {
-          // Son rakamı sil
-          const newValue = currentValue.substring(0, currentValue.length - 1);
-
-          // Yeni formatlanmış değeri oluştur
-          let formatted = "";
-          if (newValue.length > 0) {
-            formatted = "(" + newValue.substring(0, 3);
-            if (newValue.length >= 4) {
-              formatted += ") " + newValue.substring(3, 6);
-              if (newValue.length >= 7) {
-                formatted += " " + newValue.substring(6, 10);
-              }
-            } else if (newValue.length === 3) {
-              formatted += ")";
-            }
-          }
-
-          e.target.value = formatted;
-          lastValue = newValue;
-
-          // Buton durumunu güncelle
-          if (newValue.length === 10) {
-            sendBtn.disabled = false;
-            sendBtn.className =
-              "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-[#1c1d1d] text-white rounded-lg hover:bg-[#6bb300] transition-colors flex items-center justify-center cursor-pointer";
-          } else {
-            sendBtn.disabled = true;
-            sendBtn.className =
-              "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-transparent text-[#1c1d1d] rounded-lg transition-colors flex items-center justify-center cursor-not-allowed border border-[#1c1d1d]";
-          }
-        } else if (e.key === "Delete") {
-          // Delete tuşu için tüm içeriği temizle
-          e.target.value = "";
-          lastValue = "";
-          sendBtn.disabled = true;
-          sendBtn.className =
-            "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-transparent text-[#1c1d1d] rounded-lg transition-colors flex items-center justify-center cursor-not-allowed border border-[#1c1d1d]";
-        }
-      }
-    });
-  }
-
-  window.changePhoneNumber = function () {
-    // Success banner'ı gizle
-    document
-      .getElementById("verification-success-banner")
-      .classList.add("hidden");
-
-    // Input container'ı göster
-    document.getElementById("phone-input-container").classList.remove("hidden");
-
-    // Input'ları temizle ve aktif et
-    const phoneInput = document.getElementById("whatsapp-phone");
-    phoneInput.value = "";
-    phoneInput.disabled = false;
-
-    // Kod gönder butonunu sıfırla
-    const sendBtn = document.getElementById("send-code-btn");
-    sendBtn.disabled = true;
-    sendBtn.className =
-      "absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-transparent text-[#1c1d1d] rounded-lg transition-colors flex items-center justify-center cursor-not-allowed border border-[#1c1d1d]";
-    sendBtn.innerHTML = "Kod Gönder";
-
-    // Uyarı metnini göster
-    const warningText = document.getElementById("verification-warning-text");
-    if (warningText) {
-      warningText.classList.remove("hidden");
-    }
-
-    // Doğrulama durumunu sıfırla
-    window.codVerifiedPhone = null;
-
-    // Kod girişi alanını kaldır
-    const codeContainer = document.getElementById(
-      "verification-code-container",
-    );
-    if (codeContainer) {
-      codeContainer.classList.add("hidden");
-      codeContainer.innerHTML = "";
-    }
-
-    phoneInput.focus();
-  };
-
-  window.handlePaymentAction = function () {
-    if (selectedPaymentMethod === "online") {
-      window.proceedToOnlinePayment();
-    } else {
-      window.completeOrder();
+      form.style.display = 'block';
+      const total = document.getElementById('cod-total-amount').innerText;
+      btn.innerText = `Siparişi Tamamla - ${total}`;
     }
   };
 
-  window.proceedToOnlinePayment = function () {
-    const btn = document.getElementById("payment-action-btn");
-    if (!btn) return;
-
-    const shop = window.location.hostname;
-    window.location.href = `https://${shop}/checkout`;
+  window.selectCodType = function (type, el) {
+    selectedCodPaymentType = type;
+    document.querySelectorAll('.cod-type-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
   };
 
-  // Toast Notification Fonksiyonu
-  function showToast(message, type = "info") {
-    const container = document.getElementById("toast-container");
-
-    // Mevcut toast'ları kaldır
-    const existingToasts = container.querySelectorAll('[id^="toast-"]');
-    existingToasts.forEach((existingToast) => {
-      existingToast.classList.remove("toast-enter");
-      existingToast.classList.add("toast-exit");
-      setTimeout(() => existingToast.remove(), 300);
-    });
-
-    const toast = document.createElement("div");
-    const id = "toast-" + Date.now();
-    toast.id = id;
-    toast.style.pointerEvents = "auto";
-
-    const colors = {
-      success: "bg-green-500",
-      error: "bg-red-500",
-      info: "bg-blue-500",
-      warning: "bg-[#1c1d1d]",
-    };
-
-    const icons = {
-      success:
-        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
-      error:
-        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
-      info: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
-      warning:
-        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>',
-    };
-
-    toast.className = `${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px] max-w-[400px] toast-enter`;
-    toast.innerHTML = `
-      <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        ${icons[type]}
-      </svg>
-      <span class="flex-1 text-base font-medium">${message}</span>
-      <button onclick="document.getElementById('${id}').remove()" class="text-white hover:text-gray-200 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    `;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-      toast.classList.remove("toast-enter");
-      toast.classList.add("toast-exit");
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
-  }
-
-  window.sendVerificationCode = function () {
-    const phoneInput = document.getElementById("whatsapp-phone");
-    const phone = phoneInput.value.replace(/\D/g, "");
-
-    if (!phone || phone.length !== 10) {
-      showToast("Lütfen geçerli bir telefon numarası girin", "error");
-      phoneInput.focus();
+  window.handleSubmit = function () {
+    if (selectedPaymentMethod === 'online') {
+      window.location.href = '/checkout';
       return;
     }
 
-    const fullPhone = "+90" + phone;
-    const sendBtn = document.getElementById("send-code-btn");
-    sendBtn.disabled = true;
-    sendBtn.innerHTML = `
-      <svg class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    `;
+    // Kapıda Ödeme Validasyon
+    if (!validateForm()) return;
 
-    fetch("/apps/cod/api/whatsapp/send-code", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phoneNumber: fullPhone }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          showToast("Doğrulama kodu SMS ile gönderildi!", "success");
+    const btn = document.getElementById('cod-submit-btn');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="cod-spinner"></div> İşleniyor...';
 
-          // Kod girişi alanını göster
-          const codeContainer = document.getElementById(
-            "verification-code-container",
-          );
-          codeContainer.classList.remove("hidden");
-          codeContainer.classList.add("code-input-enter");
-          codeContainer.innerHTML = `
-            <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4 mt-4">
-              <label class="text-lg font-medium text-gray-900 mb-3 block">
-                Doğrulama Kodu
-                <span class="text-red-500">*</span>
-              </label>
-              <div class="flex gap-2">
-                <input type="text" id="verification-code-input" placeholder="4 haneli kod" maxlength="4"
-                  class="flex-1 px-4 py-4 border border-gray-300 rounded-lg text-xl text-center font-mono focus:outline-none focus:ring-2 focus:ring-[#1c1d1d] focus:border-transparent">
-                <button onclick="window.verifyCode('${fullPhone}')" id="verify-code-btn"
-                  class="px-6 py-4 bg-[#1c1d1d] text-white rounded-lg hover:bg-[#6bb300] transition-colors font-medium text-lg">
-                  Doğrula
-                </button>
-              </div>
-              <p class="text-sm text-gray-600 mt-2">SMS ile gelen 4 haneli kodu girin</p>
-            </div>
-          `;
-
-          // Kod input'una focus
-          setTimeout(() => {
-            document.getElementById("verification-code-input").focus();
-          }, 100);
-
-          // Gönder butonunu güncelle
-          sendBtn.innerHTML = `
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-          `;
-          sendBtn.disabled = false;
-        } else {
-          showToast(data.error || "Kod gönderilemedi", "error");
-          sendBtn.disabled = false;
-          sendBtn.innerHTML = `
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-            </svg>
-          `;
-        }
-      })
-      .catch((err) => {
-        console.error("Kod gönderme hatası:", err);
-        showToast("Bir hata oluştu. Lütfen tekrar deneyin.", "error");
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = `
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-          </svg>
-        `;
-      });
-  };
-
-  window.verifyCode = function (phoneNumber) {
-    const codeInput = document.getElementById("verification-code-input");
-    const code = codeInput.value.trim();
-    const verifyBtn = document.getElementById("verify-code-btn");
-    const sendBtn = document.getElementById("send-code-btn");
-    const phoneInput = document.getElementById("whatsapp-phone");
-
-    if (!code || code.length !== 4) {
-      showToast("Lütfen 4 haneli kodu girin", "error");
-      codeInput.focus();
-      return;
-    }
-
-    verifyBtn.disabled = true;
-    verifyBtn.innerHTML = `
-      <svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    `;
-
-    fetch("/apps/cod/api/whatsapp/verify-code", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phoneNumber, code }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.verified) {
-          showToast("Telefon numaranız başarıyla doğrulandı!", "success");
-
-          // Kod alanını kaldır
-          const codeContainer = document.getElementById(
-            "verification-code-container",
-          );
-          codeContainer.classList.add("hidden");
-          codeContainer.innerHTML = "";
-
-          // Input container'ı gizle
-          document
-            .getElementById("phone-input-container")
-            .classList.add("hidden");
-
-          // Uyarı metnini gizle
-          const warningText = document.getElementById(
-            "verification-warning-text",
-          );
-          if (warningText) {
-            warningText.classList.add("hidden");
-          }
-
-          // Success banner'ı göster
-          const successBanner = document.getElementById(
-            "verification-success-banner",
-          );
-          const phoneDisplay = document.getElementById(
-            "verified-phone-display",
-          );
-          phoneDisplay.textContent = phoneNumber;
-          successBanner.classList.remove("hidden");
-
-          window.codVerifiedPhone = phoneNumber;
-        } else {
-          showToast(data.error || "Kod doğrulanamadı", "error");
-          verifyBtn.disabled = false;
-          verifyBtn.innerHTML = "Doğrula";
-          codeInput.value = "";
-          codeInput.focus();
-        }
-      })
-      .catch((err) => {
-        console.error("Kod doğrulama hatası:", err);
-        showToast("Kod doğrulanırken hata oluştu", "error");
-        verifyBtn.disabled = false;
-        verifyBtn.innerHTML = "Doğrula";
-      });
-  };
-
-  window.completeOrder = function () {
-    // Online ödeme seçiliyse validasyon yapma, direkt checkout'a git
-    if (selectedPaymentMethod === "online") {
-      window.proceedToOnlinePayment();
-      return;
-    }
-
-    // Kapıda ödeme için validasyonlar
-    const phone = document
-      .getElementById("whatsapp-phone")
-      .value.replace(/\D/g, "");
-    const name = document.getElementById("customer-name").value.trim();
-    const city = document.getElementById("customer-city").value.trim();
-    const address = document.getElementById("customer-address").value.trim();
-
-    if (!phone || phone.length !== 10) {
-      showToast("Lütfen telefon numaranızı girin", "error");
-      document.getElementById("whatsapp-phone").focus();
-      return;
-    }
-
-    if (!window.codVerifiedPhone) {
-      showToast("Lütfen önce telefon numaranızı doğrulayın", "error");
-      return;
-    }
-
-    if (!name || name.length < 3) {
-      showToast("Lütfen adınızı ve soyadınızı girin", "error");
-      document.getElementById("customer-name").focus();
-      return;
-    }
-
-    if (name.split(" ").filter((p) => p.length > 0).length < 2) {
-      showToast("Lütfen hem adınızı hem de soyadınızı girin", "error");
-      document.getElementById("customer-name").focus();
-      return;
-    }
-
-    if (!city) {
-      showToast("Lütfen şehir seçin", "error");
-      document.getElementById("customer-city").focus();
-      return;
-    }
-
-    if (!address || address.length < 10) {
-      showToast("Lütfen detaylı adresinizi girin", "error");
-      document.getElementById("customer-address").focus();
-      return;
-    }
-
-    // Kapıda ödeme şekli kontrolü
-    if (!selectedCodPaymentType) {
-      showToast("Lütfen kapıda ödeme şeklinizi seçin", "error");
-
-      // Kırmızı border animasyonu
-      const paymentTypeOptions = document.querySelectorAll(
-        ".cod-payment-type-option",
-      );
-      paymentTypeOptions.forEach((opt) => {
-        opt.classList.add("payment-type-error");
-      });
-
-      // 4 saniye sonra animasyonu kaldır
-      setTimeout(() => {
-        paymentTypeOptions.forEach((opt) => {
-          opt.classList.remove("payment-type-error");
-        });
-      }, 4000);
-
-      // Scroll to payment type section
-      document.getElementById("cod-payment-type-container").scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-
-      return;
-    }
-
+    // Sipariş Verilerini Hazırla (Backend'in beklediği format)
     const orderData = {
       shop: window.Shopify?.shop || window.location.hostname,
-      customerName: name,
+      customerName: document.getElementById('cod-name').value,
       customerPhone: window.codVerifiedPhone,
-      customerEmail: "",
-      customerAddress: address,
-      customerCity: city,
-      customerCountry: "Türkiye",
-      customerZip: "",
-      cartItems: window.codCartData?.items || [],
-      totalAmount: window.codCartData?.total_price || 0,
-      cartToken: window.codCartData?.token || `cod_${Date.now()}`,
-      codPaymentType: selectedCodPaymentType, // Kapıda ödeme şekli
-      landingPage:
-        sessionStorage.getItem("landingPage") || window.location.href,
-      referringSite:
-        sessionStorage.getItem("referringSite") || document.referrer,
-      userAgent: navigator.userAgent,
+      customerAddress: document.getElementById('cod-address').value,
+      customerCity: document.getElementById('cod-city').value,
+      codPaymentType: selectedCodPaymentType,
+      cartItems: window.codCartData.items.map(item => ({
+        id: item.id,
+        variant_id: item.variant_id || item.id,
+        quantity: item.quantity,
+        price: item.presentment_price ? Math.round(item.presentment_price * 100) : item.price // backend cents bekliyor olabilir
+      })),
+      totalAmount: window.codCartData.total_price,
+      cartToken: window.codCartData.token,
+      landingPage: window.location.href,
+      referringSite: document.referrer,
+      userAgent: navigator.userAgent
     };
-
-    const btn = document.getElementById("payment-action-btn");
-    btn.disabled = true;
-    btn.innerHTML = `
-      <svg class="animate-spin h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    `;
 
     fetch("/apps/cod/api/orders/create-cod", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderData),
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (data.success) {
-          fetch("/cart/clear.js", { method: "POST" });
-          showToast(
-            "Siparişiniz başarıyla oluşturuldu! Sipariş No: " +
-            (data.orderName || data.orderNumber),
-            "success",
-          );
-
+          // Sepeti Temizle
+          fetch('/cart/clear.js', { method: 'POST' });
+          showToast('Sipariş başarıyla alındı! Yönlendiriliyorsunuz...', 'success');
           setTimeout(() => {
-            const redirectUrl =
-              data.thankYouUrl || data.orderStatusUrl || `https://${data.shop}`;
-            window.location.href = redirectUrl;
+            window.location.href = data.thankYouUrl || '/';
           }, 1500);
         } else {
-          showToast(data.error || "Sipariş oluşturulamadı", "error");
-          btn.disabled = false;
-          const finalTotal = document.getElementById("final-total").textContent;
-          btn.innerHTML = `Siparişi Tamamla - ${finalTotal}`;
+          throw new Error(data.error || 'Sipariş oluşturulamadı');
         }
       })
-      .catch((err) => {
-        console.error("Sipariş hatası:", err);
-        showToast("Bir hata oluştu. Lütfen tekrar deneyin.", "error");
+      .catch(err => {
+        console.error(err);
+        showToast('Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
         btn.disabled = false;
-        const finalTotal = document.getElementById("final-total").textContent;
-        btn.innerHTML = `Siparişi Tamamla - ${finalTotal}`;
+        btn.innerText = originalText;
       });
   };
 
-  window.updateCartQuantity = function (itemKey, newQuantity) {
-    if (newQuantity < 1) {
-      // Ürünü sepetten kaldır
-      if (!confirm("Bu ürünü sepetten kaldırmak istediğinize emin misiniz?")) {
-        return;
-      }
-      newQuantity = 0;
+  function validateForm() {
+    if (!window.codVerifiedPhone) {
+      showToast('Lütfen telefon numaranızı doğrulayın.', 'error');
+      return false;
     }
-
-    // Loading state göster
-    const itemElement = document.querySelector(`[data-item-key="${itemKey}"]`);
-    if (itemElement) {
-      itemElement.style.opacity = "0.5";
-      itemElement.style.pointerEvents = "none";
+    if (!document.getElementById('cod-name').value.trim()) {
+      showToast('Lütfen ad soyad girin.', 'error');
+      return false;
     }
-
-    // Shopify cart.js API ile güncelle
-    fetch("/cart/change.js", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: itemKey,
-        quantity: newQuantity,
-      }),
-    })
-      .then((res) => res.json())
-      .then((cart) => {
-        // Global cart data'yı güncelle
-        window.codCartData = cart;
-
-        // UI'ı yeniden yükle
-        loadCartItems(cart);
-
-        // Toast göster
-        if (newQuantity === 0) {
-          showToast("Ürün sepetten kaldırıldı", "info");
-        } else {
-          showToast("Sepet güncellendi", "success");
-        }
-      })
-      .catch((err) => {
-        console.error("Sepet güncelleme hatası:", err);
-        showToast("Sepet güncellenirken hata oluştu", "error");
-
-        // Loading state'i kaldır
-        if (itemElement) {
-          itemElement.style.opacity = "1";
-          itemElement.style.pointerEvents = "auto";
-        }
-      });
-  };
-
-  window.closeCODPopup = function () {
-    const overlay = document.getElementById("cod-popup-overlay");
-    if (overlay) {
-      window.location.reload();
+    if (!document.getElementById('cod-city').value) {
+      showToast('Lütfen şehir seçin.', 'error');
+      return false;
     }
-  };
-
-  function formatMoney(cents) {
-    return new Intl.NumberFormat("tr-TR", {
-      style: "currency",
-      currency: "TRY",
-    }).format(cents / 100);
+    if (!document.getElementById('cod-address').value.trim()) {
+      showToast('Lütfen adres girin.', 'error');
+      return false;
+    }
+    if (!selectedCodPaymentType) {
+      showToast('Lütfen ödeme tipini (Nakit/Kart) seçin.', 'error');
+      return false;
+    }
+    return true;
   }
 
-  function initInterceptor() {
-    if (!isAppEnabled()) {
-      console.log("❌ COD Interceptor devre dışı");
+  // Sepet İşlemleri
+  function loadCartItems(cart) {
+    const container = document.getElementById('cod-cart-items-container');
+    const totalEl = document.getElementById('cod-total-amount');
+
+    if (!container || !totalEl) return;
+
+    if (!cart || !cart.items || cart.items.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:20px; color:#6b7280;">Sepetiniz boş</div>';
+      totalEl.innerText = '0.00 TL';
       return;
     }
 
-    console.log("✅ COD Interceptor AKTIF");
+    // Kullanılacak fiyat alanlarını belirle
+    container.innerHTML = cart.items.map(item => {
+      const itemLinePrice = (item.presentment_price * item.quantity) || 0;
+      const itemOriginalLinePrice = 1789.99;
+      const hasDiscount = itemOriginalLinePrice > itemLinePrice;
 
-    document.addEventListener(
-      "click",
-      function (e) {
-        if (e.target.closest("#cod-popup-overlay")) return;
+      return `
+        <div class="cod-cart-item">
+            ${hasDiscount ?
+          `<div class="cod-discount-badge">-%${Math.round(((itemOriginalLinePrice - itemLinePrice) / itemOriginalLinePrice) * 100)}</div>`
+          : ''}
+            <div class="cod-item-header">
+                <img src="${item.image}" class="cod-item-img">
+                <div class="cod-item-info">
+                    <h4>${item.title}</h4>
+                    <p>${item.variant_title || ''}</p>
+                </div>
+            </div>
+            <div class="cod-item-actions">
+                <div class="cod-qty-control">
+                    <button class="cod-qty-btn" onclick="window.updateCartQuantity('${item.key}', ${item.quantity - 1})">-</button>
+                    <span class="cod-qty-val">${item.quantity}</span>
+                    <button class="cod-qty-btn" onclick="window.updateCartQuantity('${item.key}', ${item.quantity + 1})">+</button>
+                </div>
+                <div class="cod-item-price">${formatMoney(itemLinePrice)}</div>
+            </div>
+        </div>
+    `;
+    }).join('');
 
-        const clickable = e.target.closest(
-          'a, button, [role="button"], input[type="submit"]',
-        );
-        if (clickable) {
-          const href = clickable.getAttribute("href") || "";
-          const className = clickable.className || "";
-          const name = clickable.name || "";
+    const cartTotal = cart.items.reduce((sum, item) => sum + (item.presentment_price * item.quantity), 0);
+    totalEl.innerText = formatMoney(cartTotal);
 
-          if (
-            name == "checkout" ||
-            isCheckoutUrl(href) ||
-            className.toLowerCase().includes("checkout") ||
-            className.toLowerCase().includes("payment")
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-
-
-            openCODPopup(null);
-
-
-            return false;
-          }
-        }
-      },
-      true,
-    );
-
-    let lastUrl = window.location.href;
-    setInterval(function () {
-      const currentUrl = window.location.href;
-      if (currentUrl !== lastUrl && isCheckoutUrl(currentUrl)) {
-        window.history.back();
-        setTimeout(() => {
-          if (!isPopupOpen) openCODPopup(null);
-        }, 50);
-      }
-      lastUrl = currentUrl;
-    }, 100);
-
-    const originalPushState = history.pushState;
-    history.pushState = function (state, title, url) {
-      if (url && isCheckoutUrl(url)) {
-        openCODPopup(null);
-        return;
-      }
-      return originalPushState.apply(history, arguments);
-    };
-
-    document.addEventListener(
-      "submit",
-      function (e) {
-        const action = e.target.getAttribute("action");
-        if (action && isCheckoutUrl(action)) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          openCODPopup(e);
-          return false;
-        }
-      },
-      true,
-    );
-
-    console.log("✅ Tüm interceptorlar aktif");
+    // Eğer COD seçiliyse butondaki fiyatı güncelle
+    const btn = document.getElementById('cod-submit-btn');
+    if (selectedPaymentMethod === 'cod') {
+      btn.innerText = `Siparişi Tamamla - ${formatMoney(cartTotal)}`;
+    }
   }
 
-  if (!sessionStorage.getItem("landingPage")) {
-    sessionStorage.setItem("landingPage", window.location.href);
-    sessionStorage.setItem("referringSite", document.referrer || "");
+  window.updateCartQuantity = function (id, qty) {
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id, quantity: qty })
+    })
+      .then(res => res.json())
+      .then(cart => {
+        window.codCartData = cart;
+        loadCartItems(cart);
+      });
+  };
+
+  // Telefon Maskeleme ve Doğrulama
+  function setupPhoneMask() {
+    const input = document.getElementById('cod-phone');
+    const btn = document.getElementById('cod-verify-btn');
+
+    if (!input || !btn) return;
+
+    input.addEventListener('input', (e) => {
+      let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+      if (x) {
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? ' ' + x[3] : '') + (x[4] ? ' ' + x[4] : '');
+      }
+
+      const raw = e.target.value.replace(/\D/g, '');
+      btn.disabled = raw.length !== 10;
+    });
+  }
+
+  window.sendVerificationCode = function () {
+    const phoneEl = document.getElementById('cod-phone');
+    if (!phoneEl) return;
+
+    const phone = phoneEl.value.replace(/\D/g, '');
+    const btn = document.getElementById('cod-verify-btn');
+
+    btn.disabled = true;
+    btn.innerText = '...';
+
+    const fullPhone = "+90" + phone;
+
+    fetch("/apps/cod/api/whatsapp/send-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phoneNumber: fullPhone }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const codeArea = document.getElementById('cod-code-area');
+          if (codeArea) codeArea.style.display = 'block';
+
+          showToast('Kod gönderildi!', 'success');
+          btn.innerText = 'Tekrar Gönder';
+          setTimeout(() => { btn.disabled = false; }, 30000);
+        } else {
+          showToast('Kod gönderilemedi.', 'error');
+          btn.disabled = false;
+          btn.innerText = 'Kod Gönder';
+        }
+      })
+      .catch(() => {
+        showToast('Servis hatası.', 'error');
+        btn.disabled = false;
+        btn.innerText = 'Kod Gönder';
+      });
+  };
+
+  window.verifyCode = function () {
+    const codeEl = document.getElementById('cod-sms-code');
+    const phoneEl = document.getElementById('cod-phone');
+
+    if (!codeEl || !phoneEl) return;
+
+    const code = codeEl.value;
+    const phone = "+90" + phoneEl.value.replace(/\D/g, '');
+
+    fetch("/apps/cod/api/whatsapp/verify-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phoneNumber: phone, code: code }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.verified) {
+          window.codVerifiedPhone = phone;
+          const successEl = document.getElementById('cod-verify-success');
+          const areaEl = document.getElementById('cod-code-area');
+          const btnEl = document.getElementById('cod-verify-btn');
+
+          if (successEl) successEl.style.display = 'block';
+          if (areaEl) areaEl.style.display = 'none';
+          if (phoneEl) phoneEl.disabled = true;
+          if (btnEl) btnEl.style.display = 'none';
+
+          showToast('Doğrulama başarılı!', 'success');
+        } else {
+          showToast('Hatalı kod.', 'error');
+        }
+      });
+  };
+
+  // Başlatıcı
+  function init() {
+    // Checkout linklerini yakala
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href*="/checkout"], form[action*="/checkout"] button, button[name="checkout"], input[name="checkout"]');
+      if (link) {
+        e.preventDefault();
+        e.stopPropagation();
+        openCODPopup(e);
+      }
+    }, true);
+
+    // URL değişimi izle (History API)
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+      if (location.href !== lastUrl) {
+        lastUrl = location.href;
+        if (isCheckoutUrl(location.href)) {
+          openCODPopup();
+          history.pushState(null, '', '/cart'); // URL'i geri al
+        }
+      }
+    }).observe(document, { subtree: true, childList: true });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initInterceptor);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    initInterceptor();
+    init();
   }
+
 })();

@@ -151,7 +151,7 @@ export async function POST(req: Request) {
             first_name: customerName.split(' ')[0] || customerName,
             last_name: customerName.split(' ').slice(1).join(' ') || '',
             email: customerEmail || `cod-${Date.now()}@shopify-cod.local`,
-            phone: '+90'+customerPhone,
+            phone: customerPhone.startsWith('+90') ? customerPhone : (customerPhone.startsWith('90') ? '+' + customerPhone : '+90' + customerPhone),
             verified_email: false,
             tags: '',
           },
