@@ -4,7 +4,7 @@ const next = require('next');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
-const port = 3003;
+const port = 3006;
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
@@ -16,10 +16,10 @@ app.prepare().then(() => {
       delete req.headers['x-forwarded-proto'];
       delete req.headers['x-forwarded-host'];
       delete req.headers['x-forwarded-port'];
-      
+
       // Force HTTP protocol
       req.headers['host'] = `${hostname}:${port}`;
-      
+
       const parsedUrl = parse(req.url, true);
       await handle(req, res, parsedUrl);
     } catch (err) {
