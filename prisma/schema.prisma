@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -21,16 +21,16 @@ model Session {
 }
 
 model Shop {
-    id               String            @id @default(cuid())
-    shopDomain       String            @unique
+    id               String           @id @default(cuid())
+    shopDomain       String           @unique
     accessToken      String
-    isActive         Boolean           @default(true)
-    codEnabled       Boolean           @default(true)
-    whatsappEnabled  Boolean           @default(true)
-    popupTitle       String            @default("Ödeme Yöntemi Seçin")
-    popupDescription String            @default("Kapıda ödeme veya online ödeme seçeneklerinden birini seçin")
-    createdAt        DateTime          @default(now())
-    updatedAt        DateTime          @updatedAt
+    isActive         Boolean          @default(true)
+    codEnabled       Boolean          @default(true)
+    whatsappEnabled  Boolean          @default(true)
+    popupTitle       String           @default("Ödeme Yöntemi Seçin")
+    popupDescription String           @default("Kapıda ödeme veya online ödeme seçeneklerinden birini seçin")
+    createdAt        DateTime         @default(now())
+    updatedAt        DateTime         @updatedAt
     orders           Order[]
     metaIntegration  MetaIntegration?
 }
@@ -40,7 +40,7 @@ model MetaIntegration {
     id                    String      @id @default(cuid())
     shopId                String      @unique
     shop                  Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
-    metaBusinessAccountId String
+    metaBusinessAccountId String?
     metaAccessToken       String
     metaTokenExpiry       DateTime?
     isActive              Boolean     @default(true)
@@ -51,16 +51,16 @@ model MetaIntegration {
 
 // Meta Pixel Configuration
 model MetaPixel {
-    id                  String           @id @default(cuid())
-    metaIntegrationId   String
-    metaIntegration     MetaIntegration  @relation(fields: [metaIntegrationId], references: [id], onDelete: Cascade)
-    pixelId             String
-    pixelName           String
-    capiAccessToken     String?
-    isActive            Boolean          @default(true)
-    createdAt           DateTime         @default(now())
-    updatedAt           DateTime         @updatedAt
-    
+    id                String          @id @default(cuid())
+    metaIntegrationId String
+    metaIntegration   MetaIntegration @relation(fields: [metaIntegrationId], references: [id], onDelete: Cascade)
+    pixelId           String
+    pixelName         String
+    capiAccessToken   String?
+    isActive          Boolean         @default(true)
+    createdAt         DateTime        @default(now())
+    updatedAt         DateTime        @updatedAt
+
     @@unique([metaIntegrationId, pixelId])
 }
 

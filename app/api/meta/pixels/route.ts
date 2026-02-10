@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 /**
@@ -31,31 +33,20 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        if (!integration.metaBusinessAccountId) {
+            return NextResponse.json(
+                { error: 'Henüz bir işletme hesabı seçilmemiş', needsAccount: true },
+                { status: 200 }
+            );
+        }
+
         // Meta Graph API üzerinden pixel'leri al
-        // İlk olarak business'tan dene
-        let pixelsUrl = `https://graph.facebook.com/v18.0/${integration.metaBusinessAccountId}/adspixels?fields=id,name&access_token=${integration.metaAccessToken}`;
+        // Hesabın türüne göre URL'i belirle (AD_ACCOUNT ise act_ ile başlamalı)
+        const accountId = integration.metaBusinessAccountId;
+        const pixelsUrl = `https://graph.facebook.com/v18.0/${accountId}/adspixels?fields=id,name&access_token=${integration.metaAccessToken}`;
 
         let response = await fetch(pixelsUrl);
         let data = await response.json();
-
-        // Eğer business'tan alınamazsa, ad account'ları dene
-        if (!response.ok && data.error) {
-            console.log('Business üzerinden pixel alınamadı, ad accounts deneniyor...');
-
-            // Tüm ad account'ları al
-            const adAccountsUrl = `https://graph.facebook.com/v18.0/me/adaccounts?fields=id,name&access_token=${integration.metaAccessToken}`;
-            const adAccountsResponse = await fetch(adAccountsUrl);
-            const adAccountsData = await adAccountsResponse.json();
-
-            if (adAccountsResponse.ok && adAccountsData.data && adAccountsData.data.length > 0) {
-                // İlk ad account'un pixel'lerini al
-                const adAccountId = adAccountsData.data[0].id; // act_xxxx formatında
-                pixelsUrl = `https://graph.facebook.com/v18.0/${adAccountId}/adspixels?fields=id,name&access_token=${integration.metaAccessToken}`;
-
-                response = await fetch(pixelsUrl);
-                data = await response.json();
-            }
-        }
 
         if (!response.ok) {
             console.error('Meta Pixel listesi alınamadı:', data);
